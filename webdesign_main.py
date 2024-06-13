@@ -81,7 +81,19 @@ class ProjectApplication:
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while listing the directory: {e}")
             return False
+    def add_selection(self):
+        # Get the current selections
+        html_element = self.optionmenu_for_html_element.get()
+        align = self.align_values.index(self.optionmenu_for_align.get())+1
+        valign = self.valign_values.index(self.optionmenu_for_valign.get())+1
+        float_option = self.float_values.index(self.optionmenu_for_float.get())+1
+        position = self.position_values.index(self.optionmenu_for_position.get())+1
 
+        # Add selections to the list
+        self.selections.append([html_element, int(str(align)+ str(valign)+str(float_option)+str(position))])
+
+        # Print the current selections list (for debugging)
+        print(self.selections)
     def open_new_window(self, project_directory):
         if self.check_project_content(project_directory):
             self.root.withdraw()  # Hide the main window
@@ -89,8 +101,55 @@ class ProjectApplication:
             self.new_root.title("Project Content")
             self.new_root.geometry("600x300")
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
+            self.frame1 = tk.CTkFrame(self.new_root)
+            self.frame1.pack(fill="both", expand=True)
 
-            # Add a button to return to the main window
+            self.font_for_optionmenu = ("Arial", 12)  # Assuming you have defined this font
+
+            # Initialize list to store selections
+            self.selections = []
+
+            # Define values for option menus
+            self.html_elements = ["Button", "Input", "Label"]
+            self.align_values = ["center", "justify", "left", "right"]
+            self.valign_values = ["baseline", "top", "middle", "bottom"]
+            self.float_values = ["none", "left", "right"]
+            self.position_values = ["absolute", "fixed", "static", "relative"]
+
+            # HTML Element Option Menu
+            self.label_html_element = tk.CTkLabel(self.frame1, text="HTML Element")
+            self.label_html_element.place(relx=0.05, rely=0.14)
+            self.optionmenu_for_html_element = tk.CTkOptionMenu(self.frame1, values=self.html_elements, font=self.font_for_optionmenu)
+            self.optionmenu_for_html_element.place(relx=0.05, rely=0.30, relwidth=0.25, relheight=0.2)
+
+            # Align Option Menu
+            self.label_align = tk.CTkLabel(self.frame1, text="Align")
+            self.label_align.place(relx=0.35, rely=0.14)
+            self.optionmenu_for_align = tk.CTkOptionMenu(self.frame1, values=self.align_values, font=self.font_for_optionmenu)
+            self.optionmenu_for_align.place(relx=0.35, rely=0.30, relwidth=0.25, relheight=0.2)
+
+            # Vertical Align Option Menu
+            self.label_valign = tk.CTkLabel(self.frame1, text="VAlign")
+            self.label_valign.place(relx=0.65, rely=0.14)
+            self.optionmenu_for_valign = tk.CTkOptionMenu(self.frame1, values=self.valign_values, font=self.font_for_optionmenu)
+            self.optionmenu_for_valign.place(relx=0.65, rely=0.30, relwidth=0.25, relheight=0.2)
+
+            # Float Option Menu
+            self.label_float = tk.CTkLabel(self.frame1, text="Float")
+            self.label_float.place(relx=0.05, rely=0.60)
+            self.optionmenu_for_float = tk.CTkOptionMenu(self.frame1, values=self.float_values, font=self.font_for_optionmenu)
+            self.optionmenu_for_float.place(relx=0.05, rely=0.75, relwidth=0.25, relheight=0.157)
+
+            # Position Option Menu
+            self.label_position = tk.CTkLabel(self.frame1, text="Position")
+            self.label_position.place(relx=0.66, rely=0.60)
+            self.optionmenu_for_position = tk.CTkOptionMenu(self.frame1, values=self.position_values, font=self.font_for_optionmenu)
+            self.optionmenu_for_position.place(relx=0.65, rely=0.75, relwidth=0.25, relheight=0.157)
+
+            # Add Button
+            self.add_btn = tk.CTkButton(self.frame1, text="Add", command=self.add_selection)
+            self.add_btn.place(relx=0.35, rely=0.75, relwidth=0.25, relheight=0.157)
+            """# Add a button to return to the main window
             back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu)
             back_button.pack()
 
@@ -99,7 +158,7 @@ class ProjectApplication:
             self.file_listbox.pack(fill="both", expand=True)
 
             if not self.show_project_content(project_directory):
-                self.back_to_main_menu()
+                self.back_to_main_menu()"""
 
     def back_to_main_menu(self):
         self.new_root.destroy()  # Close the new window

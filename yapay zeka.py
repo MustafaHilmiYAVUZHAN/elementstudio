@@ -1,69 +1,78 @@
 import numpy as np
-import random
 
-# Q-table oluşturma
-Q = np.zeros((9, 4))  # 9 durum (3x3 matris için), 4 aksiyon
+# Ortam boyutları
+GRID_SIZE = 3
+START_STATE = (0, 0)
+GOAL_STATE = (2, 2)
 
-# Hedef matris
-goal = 8
+# Eylemler (yukarı, aşağı, sol, sağ)
+ACTIONS = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+NUM_ACTIONS = len(ACTIONS)
 
-# Hareketler (0: Yukarı, 1: Aşağı, 2: Sol, 3: Sağ)
-actions = [0, 1, 2, 3]
-
-# Ödül matrisi
-R = np.array([
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 0
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 1
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 2
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 3
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 4
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 5
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 6
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],  # 7
-    [-1, -1, -1, -1, -1, -1, -1, -1, 100]  # 8 (hedef)
-])
+# Q değerlerinin başlatılması
+Q = np.zeros((GRID_SIZE, GRID_SIZE, NUM_ACTIONS))
 
 # Q-learning parametreleri
-gamma = 0.8
-alpha = 0.1
-epsilon = 0.1
-epochs = 1000
+LEARNING_RATE = 0.1
+DISCOUNT_FACTOR = 0.9
+NUM_EPISODES = 1000
+MAX_STEPS_PER_EPISODE = 100
 
-# Q-learning algoritması
-for _ in range(epochs):
-    # Rastgele bir başlangıç durumu seç
-    state = random.randint(0, 8)
-    
-    # Hedefe ulaşana kadar
-    while state != goal:
-        # Epsilon-greedy yöntem ile hareket seçimi
-        if random.uniform(0, 1) < epsilon:
-            action = random.choice(actions)
+# Eğitim döngüsü
+for episode in range(NUM_EPISODES):
+    state = START_STATE
+    for step in range(MAX_STEPS_PER_EPISODE):
+        # Eylem seçimi - epsilon-greedy yöntem
+        if np.random.rand() < 0.1:
+            action = np.random.choice(NUM_ACTIONS)
         else:
-            action = np.argmax(Q[state])
+            action = np.argmax(Q[state[0], state[1]])
+
+        # Yeni durum ve ödül alınması
+        if ACTIONS[action] == 'UP':
+            new_state = (max(state[0] - 1, 0), state[1])
+        elif ACTIONS[action] == 'DOWN':
+            new_state = (min(state[0] + 1, GRID_SIZE - 1), state[1])
+        elif ACTIONS[action] == 'LEFT':
+            new_state = (state[0], max(state[1] - 1, 0))
+        elif ACTIONS[action] == 'RIGHT':
+            new_state = (state[0], min(state[1] + 1, GRID_SIZE - 1))
         
-        # Yeni durum ve ödül hesaplama
-        next_state = action
-        reward = R[state, action]
+        if new_state == GOAL_STATE:
+            reward = 1
+        else:
+            reward = 0
         
-        # Q değerini güncelleme
-        Q[state, action] = (1 - alpha) * Q[state, action] + alpha * (reward + gamma * np.max(Q[next_state]))
+        # Q değerlerinin güncellenmesi
+        Q[state[0], state[1], action] += LEARNING_RATE * (reward + 
+                    DISCOUNT_FACTOR * np.max(Q[new_state[0], new_state[1]]) - Q[state[0], state[1], action])
         
-        # Yeni durumu güncelleme
-        state = next_state
+        # Yeni durumu güncelle
+        state = new_state
+        
+        # Hedefe ulaşıldıysa episode'yi sonlandır
+        if state == GOAL_STATE:
+            break
 
-# Eğitim sonrası Q-table'ı yazdırma
-print("Q-table:")
-print(Q)
-
-# Eğitim sonrası ajanın performansını test etme
-state = 0  # Başlangıç durumu
-steps = [state]
-
-while state != goal:
-    action = np.argmax(Q[state])
-    state = action
-    steps.append(state)
-
-print("Optimal yol:")
-print(steps)
+# Eğitim sonrası agent'in performansını test etme
+state = START_STATE
+steps = 0
+while state != GOAL_STATE and steps < MAX_STEPS_PER_EPISODE:
+    action = np.argmax(Q[state[0], state[1]])
+    print(f"State: {state}, Action: {ACTIONS[action]}")
+    
+    if ACTIONS[action] == 'UP':
+        state = (max(state[0] - 1, 0), state[1])
+    elif ACTIONS[action] == 'DOWN':
+        state = (min(state[0] + 1, GRID_SIZE - 1), state[1])
+    elif ACTIONS[action] == 'LEFT':
+        state = (state[0], max(state[1] - 1, 0))
+    elif ACTIONS[action] == 'RIGHT':
+        state = (state[0], min(state[1] + 1, GRID_SIZE - 1))
+    
+    steps += 1
+    
+if state == GOAL_STATE:
+    print("Goal reached!")
+else:
+    print("Agent couldn't reach the goal.")
