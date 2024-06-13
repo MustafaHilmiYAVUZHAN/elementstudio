@@ -18,36 +18,36 @@ class DT:
                 frame_label = customtkinter.CTkTabview(
                     self.mainFrame, corner_radius=10, height=self.root.winfo_screenheight() / 20 * (len(content[0])), width=200
                 )
-                frame_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=0, columnspan=3, pady=0, sticky='w')
+                frame_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=0, columnspan=3, pady=0)
                 frame_label.add(label_text)
                 inner_widgets[label_text] = frame_label
 
                 for index, item in enumerate(content):
                     if isinstance(item[1], list):
-                        sub_label = customtkinter.CTkLabel(frame_label.tab(label_text), text=item[0], width=150)
-                        sub_label.grid(row=index, column=0, padx=5, pady=2, sticky='w')
+                        sub_label = customtkinter.CTkLabel(frame_label.tab(label_text), text=item[0], width=120)
+                        sub_label.grid(row=index, column=0, padx=5, pady=2)
                         combobox = customtkinter.CTkComboBox(frame_label.tab(label_text), values=item[1])
                         combobox.grid(row=index, column=1, padx=5, pady=2, sticky='e')
                         combobox.set(item[1][0])
                         inner_widgets[item[0]] = (sub_label, combobox)
                     else:
-                        sub_label = customtkinter.CTkLabel(frame_label.tab(label_text), text=item[0], width=150)
-                        sub_label.grid(row=index, column=0, padx=5, pady=2, sticky='w')
+                        sub_label = customtkinter.CTkLabel(frame_label.tab(label_text), text=item[0], width=120)
+                        sub_label.grid(row=index, column=0, padx=5, pady=2)
                         entry = customtkinter.CTkEntry(frame_label.tab(label_text))
                         entry.grid(row=index, column=1, padx=5, pady=2, sticky='e')
                         entry.insert(0, item[1])
                         inner_widgets[item[0]] = (sub_label, entry)
                 self.widgets[label_text] = inner_widgets
             else:
-                label = customtkinter.CTkLabel(self.mainFrame, text=label_text, width=150)
-                label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
+                label = customtkinter.CTkLabel(self.mainFrame, text=label_text, width=10)
+                label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5)
                 combobox = customtkinter.CTkComboBox(self.mainFrame, values=content)
                 combobox.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=10, pady=5, sticky='ew')
                 combobox.set(content[0])
                 self.widgets[label_text] = (label, combobox)
         else:
-            label = customtkinter.CTkLabel(self.mainFrame, text=label_text, width=150)
-            label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
+            label = customtkinter.CTkLabel(self.mainFrame, text=label_text, width=10)
+            label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5)
             entry = customtkinter.CTkEntry(self.mainFrame)
             entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=10, pady=5, sticky='ew')
             entry.insert(0, content)
@@ -86,6 +86,11 @@ class DT:
             elif isinstance(widget, customtkinter.CTkEntry):
                 return widget.get()
         return None
+    def get_all_ids(self):
+        self.cursor.execute('''
+            SELECT id_name FROM Data
+        ''')
+        return [row[0] for row in self.cursor.fetchall()]
 
     """    def set_widget(self, label_text, value):
         widget = self.find_widget(label_text)

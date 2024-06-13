@@ -1,8 +1,10 @@
 import customtkinter as tk
-from tkinter import filedialog, messagebox, simpledialog, Listbox
+from tkinter import filedialog, messagebox, simpledialog, Tk
 import os
 import shutil
-
+from DatabaseManager import DM
+from DynamicTable import DT
+from Property import CssPropertyManager as cssPM
 class ProjectApplication:
     def __init__(self, root):
         self.root = root
@@ -88,9 +90,11 @@ class ProjectApplication:
         valign = self.valign_values.index(self.optionmenu_for_valign.get())+1
         float_option = self.float_values.index(self.optionmenu_for_float.get())+1
         position = self.position_values.index(self.optionmenu_for_position.get())+1
-
+        self.db_manager.insert_data("id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position)),0,0,0,0,"class_defualt","")
         # Add selections to the list
-        self.selections.append([html_element, int(str(align)+ str(valign)+str(float_option)+str(position))])
+        self.selections.append(["id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position))])
+        self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
+        self.id_optionmenu.update()
 
         # Print the current selections list (for debugging)
         print(self.selections)
@@ -99,10 +103,20 @@ class ProjectApplication:
             self.root.withdraw()  # Hide the main window
             self.new_root = tk.CTkToplevel()
             self.new_root.title("Project Content")
-            self.new_root.geometry("600x300")
+            screen_width = self.new_root.winfo_screenwidth()
+            screen_height = self.new_root.winfo_screenheight()
+            self.new_root.resizable(0,0)
+            
+            # Pencere boyutunu ve konumunu ayarla
+            window_width = int(screen_width // 5.6) # Ekran genişliğinin altıda biri
+            window_height = screen_height  # Ekran yüksekliği kadar
+            
+            # Pencereyi sol üst köşeye konumlandır
+            self.new_root.geometry(f"{window_width}x{window_height}+0+0")
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
             self.frame1 = tk.CTkFrame(self.new_root)
-            self.frame1.pack(fill="both", expand=True)
+            self.frame1.grid(row=0, column=0, padx=10, pady=10)
+           
 
             self.font_for_optionmenu = ("Arial", 12)  # Assuming you have defined this font
 
@@ -115,40 +129,56 @@ class ProjectApplication:
             self.valign_values = ["baseline", "top", "middle", "bottom"]
             self.float_values = ["none", "left", "right"]
             self.position_values = ["absolute", "fixed", "static", "relative"]
-
+            self.db_manager = DM('example_database.db')
+            self.db_manager.create_table()
             # HTML Element Option Menu
             self.label_html_element = tk.CTkLabel(self.frame1, text="HTML Element")
-            self.label_html_element.place(relx=0.05, rely=0.14)
+            self.label_html_element.grid(row=0, column=0, padx=10, pady=10)
+
             self.optionmenu_for_html_element = tk.CTkOptionMenu(self.frame1, values=self.html_elements, font=self.font_for_optionmenu)
-            self.optionmenu_for_html_element.place(relx=0.05, rely=0.30, relwidth=0.25, relheight=0.2)
+            self.optionmenu_for_html_element.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
-            # Align Option Menu
             self.label_align = tk.CTkLabel(self.frame1, text="Align")
-            self.label_align.place(relx=0.35, rely=0.14)
+            self.label_align.grid(row=0, column=1, padx=10, pady=10)
+
             self.optionmenu_for_align = tk.CTkOptionMenu(self.frame1, values=self.align_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_align.place(relx=0.35, rely=0.30, relwidth=0.25, relheight=0.2)
+            self.optionmenu_for_align.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
 
-            # Vertical Align Option Menu
             self.label_valign = tk.CTkLabel(self.frame1, text="VAlign")
-            self.label_valign.place(relx=0.65, rely=0.14)
+            self.label_valign.grid(row=2, column=0, padx=10, pady=10)
+
             self.optionmenu_for_valign = tk.CTkOptionMenu(self.frame1, values=self.valign_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_valign.place(relx=0.65, rely=0.30, relwidth=0.25, relheight=0.2)
+            self.optionmenu_for_valign.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
 
-            # Float Option Menu
             self.label_float = tk.CTkLabel(self.frame1, text="Float")
-            self.label_float.place(relx=0.05, rely=0.60)
+            self.label_float.grid(row=2, column=1, padx=10, pady=10)
+
             self.optionmenu_for_float = tk.CTkOptionMenu(self.frame1, values=self.float_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_float.place(relx=0.05, rely=0.75, relwidth=0.25, relheight=0.157)
+            self.optionmenu_for_float.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
 
-            # Position Option Menu
             self.label_position = tk.CTkLabel(self.frame1, text="Position")
-            self.label_position.place(relx=0.66, rely=0.60)
-            self.optionmenu_for_position = tk.CTkOptionMenu(self.frame1, values=self.position_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_position.place(relx=0.65, rely=0.75, relwidth=0.25, relheight=0.157)
+            self.label_position.grid(row=4, column=0, padx=10, pady=10)
 
-            # Add Button
+            self.optionmenu_for_position = tk.CTkOptionMenu(self.frame1, values=self.position_values, font=self.font_for_optionmenu)
+            self.optionmenu_for_position.grid(row=5, column=0, padx=10, pady=10, sticky='ew')
+
             self.add_btn = tk.CTkButton(self.frame1, text="Add", command=self.add_selection)
-            self.add_btn.place(relx=0.35, rely=0.75, relwidth=0.25, relheight=0.157)
+            self.add_btn.grid(row=5, column=1, padx=10, pady=10)
+            #######################
+            self.id_optionmenu = tk.CTkOptionMenu(self.new_root,values=self.db_manager.get_all_ids())
+            self.id_optionmenu.place(rely=0.3,relx=0.025,relheight=0.03,relwidth=0.95)
+            # Sütun genişliklerini eşitleme
+            self.frame1.grid_columnconfigure(0, weight=1)
+            self.frame1.grid_columnconfigure(1, weight=1)
+            self.element_property = tk.CTkTabview(self.new_root)
+            self.element_property.place(rely=0.33,relx=0.0125,relheight=0.63,relwidth=0.975)
+            self.element_property.add("css")           
+            self.table = DT(self.element_property.tab("css"))
+            self.css_property_manager = cssPM(self.table)
+            self.css_property_manager.add_css_property()
+
+            self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
+
             """# Add a button to return to the main window
             back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu)
             back_button.pack()
