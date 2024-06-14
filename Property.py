@@ -3,6 +3,16 @@ class CssPropertyManager:
         self.table = table
     
     def add_css_property(self):
+        self.table.add_row("color", "red")
+        self.table.add_row("background-color", "rgba(0, 0, 255, 0.5)")
+        self.table.add_row("font-family", ["Arial", "Times New Roman"])
+        self.table.add_row("font-size", "16px")
+        self.table.add_row("margin", [["margin-top", "10px"], ["margin-right", "10%"], ["margin-bottom", "5px"], ["margin-left", "20%"]])
+        self.table.add_row("padding", [["padding-top", "10px"], ["padding-right", "10%"], ["padding-bottom", "5px"], ["padding-left", "20%"]])
+        self.table.add_row("border", "1px solid black")
+        self.table.add_row("width", "100px")
+        self.table.add_row("height", "100px")
+        self.table.add_row("display", ["block", "inline", "inline-block"])
         self.table.add_row("overflow", [
             "visible",
             "hidden",
@@ -37,7 +47,20 @@ class CssPropertyManager:
             "crosshair",
             "help"
         ])
-        
+        self.table.add_row("flex",[["flex-grow", [
+            "number",
+            "initial",
+            "inherit"
+        ]],["flex-shrink", [
+            "number",
+            "initial",
+            "inherit"
+        ]],["flex-basis", [
+            "auto",
+            "number",
+            "initial",
+            "inherit"
+        ]]])
         self.table.add_row("display", [
             "block",
             "inline",
@@ -282,24 +305,7 @@ class CssPropertyManager:
             "inherit"
         ])
         
-        self.table.add_row("flex-grow", [
-            "number",
-            "initial",
-            "inherit"
-        ])
         
-        self.table.add_row("flex-shrink", [
-            "number",
-            "initial",
-            "inherit"
-        ])
-        
-        self.table.add_row("flex-basis", [
-            "auto",
-            "number",
-            "initial",
-            "inherit"
-        ])
         
         self.table.add_row("grid-template-columns", [
             "none",
@@ -346,7 +352,7 @@ class CssPropertyManager:
             "column dense"
         ])
         
-    def convert_to_css(element_type, element_id, avfp, x, y, width, height, element_class):
+    def convert_to_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
         avfp = str(avfp)
         align, valign, floating, position = avfp[0], avfp[1], avfp[2], avfp[3]
         css_template = f"""#{element_id} {{
@@ -360,4 +366,5 @@ class CssPropertyManager:
         height: {height}px;
         }}
         """
+
         return css_template, element_class

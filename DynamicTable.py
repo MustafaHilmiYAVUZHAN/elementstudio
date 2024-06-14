@@ -86,12 +86,27 @@ class DT:
             elif isinstance(widget, customtkinter.CTkEntry):
                 return widget.get()
         return None
-    def get_all_ids(self):
-        self.cursor.execute('''
-            SELECT id_name FROM Data
-        ''')
-        return [row[0] for row in self.cursor.fetchall()]
+    def all_data_in_wigdet(self):
+        self.data_dict={}
+        for m in self.widgets:
 
+            if isinstance(self.find_widget(m),tuple):
+
+                self.data_dict[m]=self.find_widget(m)[1].get()
+            
+                # print(m+str(self.find_widget(m)))
+            elif isinstance(self.find_widget(m),dict):
+                us_dict = list(self.find_widget(m))
+
+                dict_in_dict={}
+                for a in range(len(us_dict)-1):
+
+                    dict_in_dict[us_dict[a+1]] = self.find_widget(us_dict[a+1])[1].get()
+                self.data_dict[us_dict[0]]=dict_in_dict
+                    
+            else:
+                print(type(self.find_widget(m)))
+        return self.data_dict
     """    def set_widget(self, label_text, value):
         widget = self.find_widget(label_text)
         if widget:
@@ -151,8 +166,8 @@ if __name__ == "__main__":
             print(f"{item[0]}: {item[1]}")
 
     print(table.get_widget("Name"))
-
-    table.destroy_widget("Name")
-    table.destroy_widget("Education")
+    table.all_data_in_wigdet()
+    ##table.destroy_widget("Name")
+    ##table.destroy_widget("Education")
 
     root.mainloop()

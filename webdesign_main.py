@@ -178,7 +178,7 @@ class ProjectApplication:
             self.css_property_manager.add_css_property()
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
-
+            print(self.table.all_data_in_wigdet())
             """# Add a button to return to the main window
             back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu)
             back_button.pack()
