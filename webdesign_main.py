@@ -1,5 +1,5 @@
 import customtkinter as tk
-from tkinter import filedialog, messagebox, simpledialog, Tk
+from tkinter import filedialog, messagebox, simpledialog, Canvas
 import os
 import shutil
 from DatabaseManager import DM
@@ -100,29 +100,34 @@ class ProjectApplication:
         print(self.selections)
     def open_new_window(self, project_directory):
         if self.check_project_content(project_directory):
+            self.root = root
             self.root.withdraw()  # Hide the main window
+            
             self.new_root = tk.CTkToplevel()
             self.new_root.title("Project Content")
+            
+            # Kenarlıkları ve başlık çubuğunu kaldır
+            self.new_root.overrideredirect(True)
+            
             screen_width = self.new_root.winfo_screenwidth()
             screen_height = self.new_root.winfo_screenheight()
-            self.new_root.resizable(0,0)
+            self.new_root.resizable(0, 0)
             
             # Pencere boyutunu ve konumunu ayarla
-            window_width = int(screen_width // 5.6) # Ekran genişliğinin altıda biri
+            window_width = int(screen_width // 5.6)  # Ekran genişliğinin altıda biri
             window_height = screen_height  # Ekran yüksekliği kadar
             
             # Pencereyi sol üst köşeye konumlandır
             self.new_root.geometry(f"{window_width}x{window_height}+0+0")
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
+            
             self.frame1 = tk.CTkFrame(self.new_root)
             self.frame1.grid(row=0, column=0, padx=10, pady=10)
-           
-
+            
             self.font_for_optionmenu = ("Arial", 12)  # Assuming you have defined this font
-
+            
             # Initialize list to store selections
             self.selections = []
-
             # Define values for option menus
             self.html_elements = ["Button", "Input", "Label"]
             self.align_values = ["center", "justify", "left", "right"]
@@ -171,19 +176,21 @@ class ProjectApplication:
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
             self.element_property = tk.CTkTabview(self.new_root)
-            self.element_property.place(rely=0.33,relx=0.0125,relheight=0.63,relwidth=0.975)
+            self.element_property.place(rely=0.33,relx=0.0125,relheight=0.58,relwidth=0.975)
             self.element_property.add("css")           
             self.table = DT(self.element_property.tab("css"))
             self.css_property_manager = cssPM(self.table)
             self.css_property_manager.add_css_property()
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
+            self.update_btn = tk.CTkButton(self.new_root,text="update",command=lambda:print(self.table.all_data_in_wigdet()))
+            self.update_btn.place(rely=0.92,relx=0.55,relwidth=0.4)
             print(self.table.all_data_in_wigdet())
-            """# Add a button to return to the main window
-            back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu)
-            back_button.pack()
+            # Add a button to return to the main window
+            back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu,hover_color="black")
+            back_button.place(rely=0.92,relx=0.05,relwidth=0.4)
 
-            # Listbox to show project content
+            """ # Listbox to show project content
             self.file_listbox = Listbox(self.new_root)
             self.file_listbox.pack(fill="both", expand=True)
 
