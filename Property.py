@@ -3,7 +3,7 @@ class CssPropertyManager:
         self.table = table
     
     def add_css_property(self):
-        self.table.add_row("color", ["white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","black","#000","red","hsl(0, 100%, 50%)","green","hsl(120, 100%, 50%)","blue","hsl(240, 100%, 50%)"])
+        self.table.add_row("color", ["black","#000","white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","red","hsl(0, 100%, 50%)","green","hsl(120, 100%, 50%)","blue","hsl(240, 100%, 50%)"])
         self.table.add_row("background-color", ["transparent","initial","white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","black","#000"])
         self.table.add_row("font-family", ["Arial", "Times New Roman"])
         self.table.add_row("font-size", ["10",["px","%","em","rem","cm"]])
@@ -218,18 +218,7 @@ class CssPropertyManager:
             "inset 0 0 10px #000000"
         ])
         
-        self.table.add_row("font-size", [
-            "xx-small",
-            "x-small",
-            "small",
-            "medium",
-            "large",
-            "x-large",
-            "xx-large",
-            "smaller",
-            "larger",
-            "10px"
-        ])
+
         
         
         
@@ -241,13 +230,7 @@ class CssPropertyManager:
             "initial",
             "inherit"
         ])
-        
-        self.table.add_row("width", [
-            "auto",
-            "value",
-            "initial",
-            "inherit"
-        ])
+
         
 
         
@@ -312,7 +295,9 @@ class CssPropertyManager:
         ])
         
         self.table.add_row("order", [
-            "number",
+            "1",
+            "2",
+            "3",
             "initial",
             "inherit"
         ])
@@ -395,7 +380,7 @@ class DictToCSS:
                 # Eğer değer bir sözlükse (örneğin 'flex' özelliği gibi)
                 css += f"{key}: "
                 for sub_key, sub_value in value.items():
-                    css += f" {sub_value} "
+                    css += f"{sub_value} "
                 css = css.rstrip() + ";\n"
             else:
                 css += f"{key}: {value};\n"

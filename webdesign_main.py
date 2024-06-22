@@ -182,7 +182,7 @@ class ProjectApplication:
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
             self.element_property = tk.CTkTabview(self.new_root)
-            self.element_property.place(rely=0.33,relx=0.0125,relheight=0.58,relwidth=0.975)
+            self.element_property.place(rely=0.63,relx=0.0125,relheight=0.28,relwidth=0.975)
             self.element_property.add("css")           
             self.table = DT(self.element_property.tab("css"))
             self.css_property_manager = cssPM(self.table)
