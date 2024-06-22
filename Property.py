@@ -3,11 +3,11 @@ class CssPropertyManager:
         self.table = table
     
     def add_css_property(self):
-        self.table.add_row("color", "red")
-        self.table.add_row("background-color", "rgba(0, 0, 255, 0.5)")
+        self.table.add_row("color", ["white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","black","#000","red","hsl(0, 100%, 50%)","green","hsl(120, 100%, 50%)","blue","hsl(240, 100%, 50%)"])
+        self.table.add_row("background-color", ["white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","black","#000"])
         self.table.add_row("font-family", ["Arial", "Times New Roman"])
         self.table.add_row("font-size", "16px")
-        self.table.add_row("margin", [["margin-top", "10px"], ["margin-right", "10%"], ["margin-bottom", "5px"], ["margin-left", "20%"]])
+        self.table.add_row("margin", [["margin-top", ["10",["px","%","em","rem","cm"]]], ["margin-right", ["10",["px","%","em","rem","cm"]]], ["margin-bottom", ["10",["px","%","em","rem","cm"]]], ["margin-left", ["10",["px","%","em","rem","cm"]]]])
         self.table.add_row("padding", [["padding-top", "10px"], ["padding-right", "10%"], ["padding-bottom", "5px"], ["padding-left", "20%"]])
         self.table.add_row("border", "1px solid black")
         self.table.add_row("width", "100px")
@@ -214,19 +214,19 @@ class CssPropertyManager:
             "inherit"
         ])
         
-        self.table.add_row("margin", [
+        """self.table.add_row("margin", [
             "auto",
             "value",
             "initial",
             "inherit"
-        ])
+        ])"""
         
-        self.table.add_row("padding", [
+        """self.table.add_row("padding", [
             "auto",
             "value",
             "initial",
             "inherit"
-        ])
+        ])"""
         
         self.table.add_row("text-align", [
             "left",
@@ -379,11 +379,8 @@ class DictToCSS:
                 # Eğer değer bir sözlükse (örneğin 'flex' özelliği gibi)
                 css += f"{key}: "
                 for sub_key, sub_value in value.items():
-                    css += f"{sub_key} {sub_value} "
+                    css += f" {sub_value} "
                 css = css.rstrip() + ";\n"
-            elif key == "opacity":
-                # Opacity değerini ondalık sayıya çevir
-                css += f"{key}: {float(value)};\n"
             else:
                 css += f"{key}: {value};\n"
         print(css.rstrip())
