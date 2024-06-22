@@ -102,18 +102,18 @@ class ProjectApplication:
         # Print the current selections list (for debugging)
         print(self.selections)
     def open_new_window(self, project_directory):
-        if self.check_project_content(project_directory):
-            
+        #if self.check_project_content(project_directory):
+        if 1:    
             self.root = root
 
             self.root.withdraw()  # Hide the main window
             
             self.new_root = tk.CTkToplevel()
-            
+            self.new_root.wm_attributes("-topmost", True)
             self.new_root.title("Project Content")
             
             # Kenarlıkları ve başlık çubuğunu kaldır
-            self.new_root.overrideredirect(True)
+            #self.new_root.overrideredirect(True)
             
             screen_width = self.new_root.winfo_screenwidth()
             screen_height = self.new_root.winfo_screenheight()
@@ -189,7 +189,7 @@ class ProjectApplication:
             self.css_property_manager.add_css_property()
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
-            self.update_btn = tk.CTkButton(self.new_root,text="update",command=lambda:print(self.table.all_data_in_wigdet()))
+            self.update_btn = tk.CTkButton(self.new_root,text="update",command=self.toplevel_update)
             self.update_btn.place(rely=0.92,relx=0.575,relwidth=0.4)
             print(self.table.all_data_in_wigdet())
             # Add a button to return to the main window
@@ -204,7 +204,10 @@ class ProjectApplication:
 
             if not self.show_project_content(project_directory):
                 self.back_to_main_menu()"""
-
+    def toplevel_update(self):
+        from DatabaseManager import DM
+        self.back_to_main_menu()
+        self.open_new_window("")
     def back_to_main_menu(self):
         self.new_root.destroy()  # Close the new window
         self.root.deiconify()    # Show the main window
