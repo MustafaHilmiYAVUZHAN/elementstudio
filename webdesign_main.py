@@ -128,7 +128,7 @@ class ProjectApplication:
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
             pywinstyles.apply_style(self.new_root,"acrylic")
             self.frame1 = tk.CTkFrame(self.new_root)
-            self.frame1.grid(row=0, column=0, padx=10, pady=10)
+            self.frame1.place(rely=0.015,relx=0.025,relheight=0.3,relwidth=0.9)
             
             self.font_for_optionmenu = ("Arial", 12)  # Assuming you have defined this font
             
@@ -172,13 +172,16 @@ class ProjectApplication:
 
             self.optionmenu_for_position = tk.CTkOptionMenu(self.frame1, values=self.position_values, font=self.font_for_optionmenu)
             self.optionmenu_for_position.grid(row=5, column=0, padx=10, pady=10, sticky='ew')
+            
 
             self.add_btn = tk.CTkButton(self.frame1, text="Add", command=self.add_selection)
             self.add_btn.grid(row=5, column=1, padx=10, pady=10)
             #######################
             self.id_optionmenu = tk.CTkOptionMenu(self.new_root,values=self.db_manager.get_all_ids())
-            self.id_optionmenu.place(rely=0.3,relx=0.025,relheight=0.03,relwidth=0.95)
+            self.id_optionmenu.place(rely=0.34,relx=0.05,relheight=0.03,relwidth=0.7)
             # Sütun genişliklerini eşitleme
+            self.delete_btn = tk.CTkButton(self.new_root,text="×",fg_color="red")
+            self.delete_btn.place(rely=0.34,relx=0.775,relheight=0.03,relwidth=0.125)
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
             self.element_property = tk.CTkTabview(self.new_root)
