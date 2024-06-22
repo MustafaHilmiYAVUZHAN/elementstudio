@@ -21,7 +21,7 @@ class DT:
                 for index, item in enumerate(content):
                     if isinstance(item[1], list):
                         if len(item[1]) ==2 and isinstance(item[1][1], list):
-                            label = customtkinter.CTkLabel(self.mainFrame, text="◆"+item[0])
+                            label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
                             label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                             entry = customtkinter.CTkEntry(self.mainFrame,width=80)
                             entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
@@ -32,14 +32,14 @@ class DT:
                             inner_widgets[label_text] = (label, entry, combobox)
                         else:
                             
-                            sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆"+item[0])
+                            sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
                             sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                             combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1],width=160)
                             combobox.grid(row=len(self.mainFrame.grid_slaves())-1, column=1,columnspan=2, padx=5, pady=2, sticky='w')
                             combobox.set(item[1][0])
                             inner_widgets[item[0]] = (sub_label, combobox)
                     else:
-                        sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆"+item[0])
+                        sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
                         sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                         entry = customtkinter.CTkEntry(self.mainFrame,width=160)
                         entry.grid(row=len(self.mainFrame.grid_slaves())-1, column=1, columnspan=2, padx=5, pady=2, sticky='w')

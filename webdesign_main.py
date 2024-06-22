@@ -205,7 +205,7 @@ class ProjectApplication:
             if not self.show_project_content(project_directory):
                 self.back_to_main_menu()"""
     def toplevel_update(self):
-        from DatabaseManager import DM
+        from DynamicTable import DT
         self.back_to_main_menu()
         self.open_new_window("")
     def back_to_main_menu(self):
