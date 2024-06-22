@@ -1,10 +1,10 @@
-asda - C:/Users/Musta/OneDrive/Masaüstü/electronstudio\asda
-asddddddddddddddd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/asddddddddddddddd
 zcxz - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/zcxz
-sd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio\sd
-sad - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme/sad
-sasd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sasd
 dededdd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/dededdd
+sasd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sasd
+asddddddddddddddd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/asddddddddddddddd
+sd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sd
+asda - C:/Users/Musta/OneDrive/Masaüstü/electronstudio\asda
+sad - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme/sad
 ASD - C:/Users/Musta/OneDrive/Masaüstü/electronstudio\ASD
 fds - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme/fds
 deneme1 - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme1

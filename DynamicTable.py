@@ -1,5 +1,3 @@
-# dynamic_table.py
-
 import customtkinter as tk
 import customtkinter
 
@@ -7,49 +5,70 @@ class DT:
     def __init__(self, root):
         self.root = root
         customtkinter.set_appearance_mode("System")
-        customtkinter.set_default_color_theme("blue")
+        tk.set_default_color_theme("extreme.json")
         self.mainFrame = customtkinter.CTkScrollableFrame(root)
         self.widgets = {}
-
+        self.mainFrame.columnconfigure(2, minsize=10)
+        self.framefont = tk.CTkFont(size=25)
     def add_row(self, label_text, content):
         if isinstance(content, list):
             if isinstance(content[0], list):
                 inner_widgets = {}
-                frame_label = customtkinter.CTkTabview(
-                    self.mainFrame, corner_radius=10, height=self.root.winfo_screenheight() / 20 * (len(content[0])), width=200
-                )
+                frame_label = customtkinter.CTkLabel(self.mainFrame,text=label_text,font=self.framefont)
                 frame_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=0, columnspan=3, pady=0)
-                frame_label.add(label_text)
                 inner_widgets[label_text] = frame_label
 
                 for index, item in enumerate(content):
                     if isinstance(item[1], list):
-                        sub_label = customtkinter.CTkLabel(frame_label.tab(label_text), text=item[0], width=120)
-                        sub_label.grid(row=index, column=0, padx=5, pady=2)
-                        combobox = customtkinter.CTkComboBox(frame_label.tab(label_text), values=item[1])
-                        combobox.grid(row=index, column=1, padx=5, pady=2, sticky='e')
-                        combobox.set(item[1][0])
-                        inner_widgets[item[0]] = (sub_label, combobox)
+                        if len(item[1]) ==2 and isinstance(item[1][1], list):
+                            label = customtkinter.CTkLabel(self.mainFrame, text="◆"+item[0])
+                            label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
+                            entry = customtkinter.CTkEntry(self.mainFrame,width=80)
+                            entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
+                            entry.insert(0, item[1][0])
+                            combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1][1], width=70)
+                            combobox.grid(row=len(self.mainFrame.grid_slaves()) - 2, column=2, padx=5, pady=5, sticky='w')
+                            #combobox.set(content[1][0])
+                            inner_widgets[label_text] = (label, entry, combobox)
+                        else:
+                            
+                            sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆"+item[0])
+                            sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
+                            combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1],width=160)
+                            combobox.grid(row=len(self.mainFrame.grid_slaves())-1, column=1,columnspan=2, padx=5, pady=2, sticky='w')
+                            combobox.set(item[1][0])
+                            inner_widgets[item[0]] = (sub_label, combobox)
                     else:
-                        sub_label = customtkinter.CTkLabel(frame_label.tab(label_text), text=item[0], width=120)
-                        sub_label.grid(row=index, column=0, padx=5, pady=2)
-                        entry = customtkinter.CTkEntry(frame_label.tab(label_text))
-                        entry.grid(row=index, column=1, padx=5, pady=2, sticky='e')
+                        sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆"+item[0])
+                        sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=2, sticky='w')
+                        entry = customtkinter.CTkEntry(self.mainFrame,width=160)
+                        entry.grid(row=len(self.mainFrame.grid_slaves())-1, column=1, columnspan=2, padx=5, pady=2, sticky='w')
                         entry.insert(0, item[1])
                         inner_widgets[item[0]] = (sub_label, entry)
                 self.widgets[label_text] = inner_widgets
             else:
-                label = customtkinter.CTkLabel(self.mainFrame, text=label_text, width=10)
-                label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5)
-                combobox = customtkinter.CTkComboBox(self.mainFrame, values=content)
-                combobox.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=10, pady=5, sticky='ew')
-                combobox.set(content[0])
-                self.widgets[label_text] = (label, combobox)
+                if isinstance(content[0], str) and isinstance(content[1], list):
+                    label = customtkinter.CTkLabel(self.mainFrame, text=label_text)
+                    label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
+                    entry = customtkinter.CTkEntry(self.mainFrame,width=80)
+                    entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
+                    entry.insert(0, content[0])
+                    combobox = customtkinter.CTkComboBox(self.mainFrame, values=content[1], width=70)
+                    combobox.grid(row=len(self.mainFrame.grid_slaves()) - 2, column=2, padx=5, pady=5, sticky='w')
+                    combobox.set(content[1][0])
+                    self.widgets[label_text] = (label, entry, combobox)
+                else:
+                    label = customtkinter.CTkLabel(self.mainFrame, text=label_text)
+                    label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
+                    combobox = customtkinter.CTkComboBox(self.mainFrame, values=content,width=160)
+                    combobox.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, columnspan=2, padx=5, pady=5, sticky='w')
+                    combobox.set(content[0])
+                    self.widgets[label_text] = (label, combobox)
         else:
-            label = customtkinter.CTkLabel(self.mainFrame, text=label_text, width=10)
-            label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5)
-            entry = customtkinter.CTkEntry(self.mainFrame)
-            entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=10, pady=5, sticky='ew')
+            label = customtkinter.CTkLabel(self.mainFrame, text=label_text)
+            label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
+            entry = customtkinter.CTkEntry(self.mainFrame,width=160)
+            entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, columnspan=3, padx=5, pady=5,sticky='w' )
             entry.insert(0, content)
             self.widgets[label_text] = (label, entry)
 
@@ -64,6 +83,7 @@ class DT:
 
     def destroy_widget(self, label_text):
         widget = self.widgets.pop(label_text, None)
+        
         if widget:
             if isinstance(widget, dict):
                 for inner_widget in widget.values():
@@ -75,14 +95,33 @@ class DT:
             elif isinstance(widget, tuple):
                 widget[1].destroy()
                 widget[0].destroy()
+                if len(widget)==3:
+                    widget[2].destroy()
 
     def get_widget(self, label_text):
         widget = self.find_widget(label_text)
+        
         if widget:
             if isinstance(widget, dict):
-                return [(key, value[1].get()) for key, value in widget.items() if isinstance(value, tuple) and isinstance(value[1], customtkinter.CTkEntry)]
+                entries = []
+    
+                for key, value in widget.items():
+                    # value bir tuple ve ikinci elemanı customtkinter.CTkEntry mi?
+                    if isinstance(value, tuple):
+                        print(value)
+                        entry_value = value[1].get()
+                        entries.append((key, entry_value))
+                    else :
+                        print(ss)
+                        entry_value = value[1].get()+value[2].get()
+                        entries.append((key, entry_value))
+                
+                return entries
             elif isinstance(widget, tuple):
-                return widget[1].get()
+                if len(widget)==2 and isinstance(widget[0], str) and isinstance(widget[1], list):
+                    return widget[1].get()
+                elif len(widget)==3:
+                    return widget[1].get()+widget[2].get()
             elif isinstance(widget, customtkinter.CTkEntry):
                 return widget.get()
         return None
@@ -91,8 +130,10 @@ class DT:
         for m in self.widgets:
 
             if isinstance(self.find_widget(m),tuple):
-
-                self.data_dict[m]=self.find_widget(m)[1].get()
+                if len(self.find_widget(m))==2:
+                    self.data_dict[m]=self.find_widget(m)[1].get()
+                else:
+                    self.data_dict[m]=self.find_widget(m)[1].get()+self.find_widget(m)[2].get()
             
                 # print(m+str(self.find_widget(m)))
             elif isinstance(self.find_widget(m),dict):
@@ -107,35 +148,6 @@ class DT:
             else:
                 print(type(self.find_widget(m)))
         return self.data_dict
-    """    def set_widget(self, label_text, value):
-        widget = self.find_widget(label_text)
-        if widget:
-            if isinstance(widget, dict):
-                for key, w in widget.items():
-                    if isinstance(w[1], customtkinter.CTkEntry):
-                        w[1].delete(0, tk.END)
-                        w[1].insert(0, value)
-            elif isinstance(widget, customtkinter.CTkComboBox):
-                widget.set(value)
-            elif isinstance(widget, customtkinter.CTkEntry):
-                widget.delete(0, tk.END)
-                widget.insert(0, value)"""
-
-    """def clear_widgets(self):
-        for widget in self.widgets.values():
-            if isinstance(widget, dict):
-                for inner_widget in widget.values():
-                    if isinstance(inner_widget, tuple):
-                        for w in inner_widget:
-                            w.destroy()
-                    else:
-                        inner_widget.destroy()
-            elif isinstance(widget, tuple):
-                widget[1].destroy()
-                widget[0].destroy()
-            else:
-                widget.destroy()
-        self.widgets.clear()"""
 
 # Test için örnek kullanım
 if __name__ == "__main__":
@@ -145,28 +157,29 @@ if __name__ == "__main__":
     root.columnconfigure(0, weight=1)
 
     table = DT(root)
-    table.add_row("Name", "Fatma")
-    table.add_row("Birth Date", [["Day", "5"], ["Month", ["March", "April", "May"]], ["Year", "1988"]])
-    table.add_row("Height (cm)", "160")
-    table.add_row("Weight (kg)", "55")
+    """table.add_row("Name", "Fatma")
+    table.add_row("Birth Date", [["Day", "5"], ["Month", ["March", "April"]], ["Year", "1988"]])
+    table.add_row("Height", ["160",["cm","inch"]])
+    table.add_row("Weight",  ["60",["kg","lb"]])
     table.add_row("Where are you living", ["Turkey", "Germany", "USA", "Australia"])
     table.add_row("Occupation", "Doctor")
     table.add_row("Known Languages", ["Turkish", "German", "English", "French"])
     table.add_row("Specialization", "Cardiology")
-    table.add_row("Hobbies", ["Reading", "Hiking", "Cooking"])
-    table.add_row("Education", [["Degree", "Doctor of Medicine"], ["University", "Ankara University Medical School"]])
-    table.add_row("Favorite Food", ["Kebab", "Sushi", "Salad"])
+    table.add_row("Hobbies", ["Reading", "Hiking", "Cooking"])"""
+    table.add_row("Education", [["Degree", "Doctor of Medicine"], ["University", ["Ankara University Medical School",["mezun","student"]]]])
+    """table.add_row("Favorite Food", ["Kebab", "Sushi", "Salad"])
     table.add_row("Music Genre", ["Classical", "Jazz", "Pop"])
-    table.add_row("Years of Experience", "10")
+    table.add_row("Years of Experience", "10")"""
     table.mainFrame.place(relx=0.05, rely=0.05, relheight=0.9, relwidth=0.9)
     # "Education" başlığı altındaki verileri almak için örnek kullanım
     education_data = table.get_widget("Education")
     if education_data:
         for item in education_data:
             print(f"{item[0]}: {item[1]}")
-
+    #print(table.widgets)
+    print(table.get_widget("Height"))
     print(table.get_widget("Name"))
-    table.all_data_in_wigdet()
+    print(table.all_data_in_wigdet())
     ##table.destroy_widget("Name")
     ##table.destroy_widget("Education")
 

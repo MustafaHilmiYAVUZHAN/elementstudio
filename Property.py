@@ -368,3 +368,24 @@ class CssPropertyManager:
         """
 
         return css_template, element_class
+    
+class DictToCSS:
+    def __init__(self, style_dict):
+        self.style_dict=style_dict
+    def dict_to_css(style_dict):
+        css = ""
+        for key, value in style_dict.items():
+            if isinstance(value, dict):
+                # Eğer değer bir sözlükse (örneğin 'flex' özelliği gibi)
+                css += f"{key}: "
+                for sub_key, sub_value in value.items():
+                    css += f"{sub_key} {sub_value} "
+                css = css.rstrip() + ";\n"
+            elif key == "opacity":
+                # Opacity değerini ondalık sayıya çevir
+                css += f"{key}: {float(value)};\n"
+            else:
+                css += f"{key}: {value};\n"
+        print(css.rstrip())
+        return css.rstrip()
+

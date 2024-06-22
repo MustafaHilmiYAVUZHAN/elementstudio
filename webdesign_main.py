@@ -5,13 +5,16 @@ import shutil
 from DatabaseManager import DM
 from DynamicTable import DT
 from Property import CssPropertyManager as cssPM
+from Property import DictToCSS as dtCSS
+import pywinstyles
 class ProjectApplication:
     def __init__(self, root):
         self.root = root
+        tk.set_default_color_theme("extreme.json")
         self.root.title("Project Application")
         self.root.geometry("600x300")
         self.root.resizable(0, 0)
-        
+        pywinstyles.apply_style(self.root, "acrylic")
         # New Project Button
         self.Big_button_font = tk.CTkFont(size=20)
         self.new_project_button = tk.CTkButton(root, text="New Project", command=self.new_project, font=self.Big_button_font)
@@ -32,7 +35,7 @@ class ProjectApplication:
         self.labels = []
         for i, (project, file_path) in enumerate(self.projects[:7]):
             label = tk.CTkLabel(root, text=project, cursor="hand2", font=self.Font_old_project, text_color="#888888")
-            label.place(relx=0.65, rely=0.25 + i*0.09)
+            label.place(relx=0.65, rely=0.25 + i*0.09,relwidth=0.3)
             label.bind("<Button-1>", lambda event, file_path=file_path: self.open_project(file_path))
             self.labels.append(label)
 
@@ -100,10 +103,13 @@ class ProjectApplication:
         print(self.selections)
     def open_new_window(self, project_directory):
         if self.check_project_content(project_directory):
+            
             self.root = root
+
             self.root.withdraw()  # Hide the main window
             
             self.new_root = tk.CTkToplevel()
+            
             self.new_root.title("Project Content")
             
             # Kenarlıkları ve başlık çubuğunu kaldır
@@ -120,7 +126,7 @@ class ProjectApplication:
             # Pencereyi sol üst köşeye konumlandır
             self.new_root.geometry(f"{window_width}x{window_height}+0+0")
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
-            
+            pywinstyles.apply_style(self.new_root,"acrylic")
             self.frame1 = tk.CTkFrame(self.new_root)
             self.frame1.grid(row=0, column=0, padx=10, pady=10)
             
@@ -184,12 +190,14 @@ class ProjectApplication:
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
             self.update_btn = tk.CTkButton(self.new_root,text="update",command=lambda:print(self.table.all_data_in_wigdet()))
-            self.update_btn.place(rely=0.92,relx=0.55,relwidth=0.4)
+            self.update_btn.place(rely=0.92,relx=0.575,relwidth=0.4)
             print(self.table.all_data_in_wigdet())
             # Add a button to return to the main window
             back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu,hover_color="black")
-            back_button.place(rely=0.92,relx=0.05,relwidth=0.4)
-
+            back_button.place(rely=0.92,relx=0.025,relwidth=0.4)
+            back_button = tk.CTkButton(self.new_root, text="Exit", command=lambda:exit(),hover_color="red")
+            back_button.place(rely=0.92,relx=0.45,relwidth=0.1)
+            print(dtCSS.dict_to_css(self.table.all_data_in_wigdet()))
             """ # Listbox to show project content
             self.file_listbox = Listbox(self.new_root)
             self.file_listbox.pack(fill="both", expand=True)
@@ -212,7 +220,7 @@ class ProjectApplication:
         # Yeni etiketleri oluştur
         for i, (project, file_path) in enumerate(self.projects[:7]):
             label = tk.CTkLabel(self.root, text=project, cursor="hand2", font=self.Font_old_project, text_color="#888888")
-            label.place(relx=0.65, rely=0.25 + i*0.09)
+            label.place(relx=0.65, rely=0.25 + i*0.09,relwidth=0.3)
             label.bind("<Button-1>", lambda event, file_path=file_path: self.open_project(file_path))
             self.labels.append(label)
 
@@ -251,7 +259,8 @@ class ProjectApplication:
         if target_directory:
             print("Selected target directory:", target_directory)
             if os.listdir(target_directory):  # If the target directory is not empty
-                project_name = simpledialog.askstring("Project Name", "Enter the project name:")
+                project_name = tk.CTkInputDialog(title="Project Name", text="Enter the project name:")
+                pywinstyles.apply_style(project_name,"acrylic")
                 if project_name:
                     target_directory = os.path.join(target_directory, project_name)
                     os.makedirs(target_directory, exist_ok=True)
