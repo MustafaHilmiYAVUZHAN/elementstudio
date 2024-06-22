@@ -47,7 +47,7 @@ class DM:
         ''', (id_name, type, padding, x, y, width, height, class_, extra_css))
         self.connection.commit()
         print(f"Inserted data with id_name: {id_name}")
-
+        return id_name
     def delete_data(self, id_name):
         self.cursor.execute('''
             DELETE FROM Data WHERE id_name=?

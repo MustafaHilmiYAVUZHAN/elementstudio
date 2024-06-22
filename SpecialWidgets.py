@@ -1,7 +1,86 @@
 import customtkinter as tk
 import customtkinter
+import pywinstyles
+class YesNoDiolog:
+    def __init__(self, title,label, yes_func=None, no_func=None):
+        self.root = tk.CTkToplevel()
+        self.root.title(title)
+        tk.set_appearance_mode("System")
+        
+        self.yes_func = yes_func
+        self.no_func = no_func
+        self.label = tk.CTkLabel(self.root, text=label)
+        self.label.pack(pady=10)
+        self.root.wm_attributes("-topmost", True)
+        tk.set_default_color_theme("extreme.json")
+        pywinstyles.apply_style(self.root,"acrylic")
+        self.yes_button = tk.CTkButton(self.root, text="Yes", command=self.on_yes_click)
+        self.yes_button.pack(side=tk.LEFT, padx=10)
 
-class DT:
+        self.no_button = tk.CTkButton(self.root, text="No", command=self.on_no_click)
+        self.no_button.pack(side=tk.RIGHT, padx=10)
+
+        self.result = None
+
+    def on_yes_click(self):
+        if self.yes_func:
+            self.yes_func()
+        self.result = True
+        self.root.destroy()
+
+    def on_no_click(self):
+        if self.no_func:
+            self.no_func()
+        self.result = False
+        self.root.destroy()
+    def show(self):
+        self.root.mainloop()
+        return self.result
+
+class AdjustableEntry:
+    def __init__(self, root, label_text):
+        self.root = root
+        self.label_text = label_text
+        tk.set_appearance_mode("System")
+        tk.set_default_color_theme("extreme.json")
+
+        self.SpecialEntryFrame = tk.CTkFrame(self.root,fg_color="#666666")
+
+        self.label = tk.CTkLabel(self.SpecialEntryFrame, text=self.label_text,fg_color="#666666")
+        self.label.place(rely=0.05,relx=0.05,relheight=0.9,relwidth=0.25)
+
+        self.btn_add = tk.CTkButton(self.SpecialEntryFrame, text="+", width=10, height=10,command=self.add)
+        self.btn_add.place(rely=0.2,relx=0.35,relheight=0.6,relwidth=0.15)
+
+
+        self.entry = tk.CTkEntry(self.SpecialEntryFrame, width=30)
+        self.entry.place(rely=0.05,relx=0.55,relheight=0.9,relwidth=0.2)
+
+        self.btn_decrease = tk.CTkButton(self.SpecialEntryFrame, text="-", width=10, height=10, command=self.decrease)
+        self.btn_decrease.place(rely=0.2,relx=0.8,relheight=0.6,relwidth=0.15)
+
+        self.setValue("20")
+
+    def getData(self):
+        return self.entry.get()
+
+    def setValue(self, value):
+        self.entry.delete(0, 'end')  # Mevcut girişi temizler
+        self.entry.insert(0, value)  # Yeni değeri ekler
+
+    def add(self):
+        current_value = self.getData()
+        if current_value.isdigit():
+            new_value = str(int(current_value) + 1)
+            self.setValue(new_value)
+
+    def decrease(self):
+        current_value = self.getData()
+        if current_value.isdigit():
+            new_value = str(int(current_value) - 1)
+            self.setValue(new_value)
+        
+class DynamicTable:
     def __init__(self, root):
         self.root = root
         customtkinter.set_appearance_mode("System")

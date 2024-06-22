@@ -12,7 +12,7 @@
         ]
     },
     "CTkFrame": {
-        "corner_radius": 4,
+        "corner_radius": 8,
         "border_width": 0,
         "fg_color": [
             "#ffffff",

@@ -3,7 +3,9 @@ from tkinter import filedialog, messagebox, simpledialog, Canvas
 import os
 import shutil
 from DatabaseManager import DM
-from DynamicTable import DT
+from SpecialWidgets import DynamicTable as DT
+from SpecialWidgets import AdjustableEntry as AE
+from SpecialWidgets import YesNoDiolog as YND
 from Property import CssPropertyManager as cssPM
 from Property import DictToCSS as dtCSS
 import pywinstyles
@@ -93,14 +95,25 @@ class ProjectApplication:
         valign = self.valign_values.index(self.optionmenu_for_valign.get())+1
         float_option = self.float_values.index(self.optionmenu_for_float.get())+1
         position = self.position_values.index(self.optionmenu_for_position.get())+1
-        self.db_manager.insert_data("id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position)),0,0,0,0,"class_defualt","")
+        self.id_optionmenu.set(self.db_manager.insert_data("id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position)),0,0,0,0,"class_defualt",""))
         # Add selections to the list
         self.selections.append(["id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position))])
         self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
+        
         self.id_optionmenu.update()
 
         # Print the current selections list (for debugging)
         print(self.selections)
+    def delete_id(self):
+        index=self.db_manager.get_all_ids().index(self.id_optionmenu.get())
+        self.db_manager.delete_data(self.id_optionmenu.get())
+        self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
+        try:
+            self.id_optionmenu.set(self.db_manager.get_all_ids()[index-1])
+        except:
+            self.id_optionmenu.set("")
+        self.id_optionmenu.update()
+
     def open_new_window(self, project_directory):
         #if self.check_project_content(project_directory):
         if 1:    
@@ -109,18 +122,17 @@ class ProjectApplication:
             self.root.withdraw()  # Hide the main window
             
             self.new_root = tk.CTkToplevel()
-            self.new_root.wm_attributes("-topmost", True)
             self.new_root.title("Project Content")
             
             # Kenarlıkları ve başlık çubuğunu kaldır
-            #self.new_root.overrideredirect(True)
+            self.new_root.overrideredirect(True)
             
             screen_width = self.new_root.winfo_screenwidth()
             screen_height = self.new_root.winfo_screenheight()
             self.new_root.resizable(0, 0)
             
             # Pencere boyutunu ve konumunu ayarla
-            window_width = int(screen_width // 5.6)  # Ekran genişliğinin altıda biri
+            window_width = int(screen_width // 5.5)  # Ekran genişliğinin altıda biri
             window_height = screen_height  # Ekran yüksekliği kadar
             
             # Pencereyi sol üst köşeye konumlandır
@@ -177,11 +189,21 @@ class ProjectApplication:
             self.add_btn = tk.CTkButton(self.frame1, text="Add", command=self.add_selection)
             self.add_btn.grid(row=5, column=1, padx=10, pady=10)
             #######################
-            self.id_optionmenu = tk.CTkOptionMenu(self.new_root,values=self.db_manager.get_all_ids())
+            self.id_optionmenu = tk.CTkOptionMenu(self.new_root, values=self.db_manager.get_all_ids() or [""])
             self.id_optionmenu.place(rely=0.34,relx=0.05,relheight=0.03,relwidth=0.7)
             # Sütun genişliklerini eşitleme
-            self.delete_btn = tk.CTkButton(self.new_root,text="×",fg_color="red")
+            self.delete_btn = tk.CTkButton(self.new_root,text="×",fg_color="red",command=lambda:YND("deneme","?",yes_func=lambda:print("+"),no_func=self.delete_id))
             self.delete_btn.place(rely=0.34,relx=0.775,relheight=0.03,relwidth=0.125)
+            ###########################################
+            self.horzinal = AE(self.new_root,"x")
+            self.horzinal.SpecialEntryFrame.place(rely=0.38,relx=0.0375,relheight=0.03,relwidth=0.45)
+            self.horzinal = AE(self.new_root,"y")
+            self.horzinal.SpecialEntryFrame.place(rely=0.38,relx=0.5125,relheight=0.03,relwidth=0.45)
+            self.horzinal = AE(self.new_root,"width")
+            self.horzinal.SpecialEntryFrame.place(rely=0.415,relx=0.0375,relheight=0.03,relwidth=0.45)
+            self.horzinal = AE(self.new_root,"height")
+            self.horzinal.SpecialEntryFrame.place(rely=0.415,relx=0.5125,relheight=0.03,relwidth=0.45)
+            #########################################
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
             self.element_property = tk.CTkTabview(self.new_root)
@@ -208,7 +230,7 @@ class ProjectApplication:
             if not self.show_project_content(project_directory):
                 self.back_to_main_menu()"""
     def toplevel_update(self):
-        from DynamicTable import DT
+        from SpecialWidgets import DynamicTable as DT
         self.back_to_main_menu()
         self.open_new_window("")
     def back_to_main_menu(self):
