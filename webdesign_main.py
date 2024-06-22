@@ -3,11 +3,13 @@ from tkinter import filedialog, messagebox, simpledialog, Canvas
 import os
 import shutil
 from DatabaseManager import DM
+from DatabaseManager import ValueParser as VP
 from SpecialWidgets import DynamicTable as DT
 from SpecialWidgets import AdjustableEntry as AE
 from SpecialWidgets import YesNoDiolog as YND
 from Property import CssPropertyManager as cssPM
 from Property import DictToCSS as dtCSS
+
 import pywinstyles
 class ProjectApplication:
     def __init__(self, root):
@@ -95,7 +97,7 @@ class ProjectApplication:
         valign = self.valign_values.index(self.optionmenu_for_valign.get())+1
         float_option = self.float_values.index(self.optionmenu_for_float.get())+1
         position = self.position_values.index(self.optionmenu_for_position.get())+1
-        self.id_optionmenu.set(self.db_manager.insert_data("id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position)),0,0,0,0,"class_defualt",""))
+        self.id_optionmenu.set(self.db_manager.insert_data(type=html_element,padding=int(str(align)+ str(valign)+str(float_option)+str(position))))
         # Add selections to the list
         self.selections.append(["id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position))])
         self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
@@ -140,7 +142,7 @@ class ProjectApplication:
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
             pywinstyles.apply_style(self.new_root,"acrylic")
             self.frame1 = tk.CTkFrame(self.new_root)
-            self.frame1.place(rely=0.015,relx=0.025,relheight=0.3,relwidth=0.9)
+            self.frame1.place(rely=0.015,relx=0.025,relheight=0.3,relwidth=0.95)
             
             self.font_for_optionmenu = ("Arial", 12)  # Assuming you have defined this font
             
@@ -161,48 +163,68 @@ class ProjectApplication:
             self.optionmenu_for_html_element = tk.CTkOptionMenu(self.frame1, values=self.html_elements, font=self.font_for_optionmenu)
             self.optionmenu_for_html_element.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
+            self.label_class = tk.CTkLabel(self.frame1, text="Class")
+            self.label_class.grid(row=0, column=1, padx=10, pady=10)
+
+            self.optionmenu_for_class = tk.CTkOptionMenu(self.frame1, values=[""], font=self.font_for_optionmenu)
+            self.optionmenu_for_class.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+
             self.label_align = tk.CTkLabel(self.frame1, text="Align")
-            self.label_align.grid(row=0, column=1, padx=10, pady=10)
+            self.label_align.grid(row=2, column=0, padx=10, pady=10)
 
             self.optionmenu_for_align = tk.CTkOptionMenu(self.frame1, values=self.align_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_align.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+            self.optionmenu_for_align.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
 
             self.label_valign = tk.CTkLabel(self.frame1, text="VAlign")
-            self.label_valign.grid(row=2, column=0, padx=10, pady=10)
+            self.label_valign.grid(row=2, column=1, padx=10, pady=10)
 
             self.optionmenu_for_valign = tk.CTkOptionMenu(self.frame1, values=self.valign_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_valign.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
+            self.optionmenu_for_valign.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
 
             self.label_float = tk.CTkLabel(self.frame1, text="Float")
-            self.label_float.grid(row=2, column=1, padx=10, pady=10)
+            self.label_float.grid(row=4, column=0, padx=10, pady=10)
 
             self.optionmenu_for_float = tk.CTkOptionMenu(self.frame1, values=self.float_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_float.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
+            self.optionmenu_for_float.grid(row=5, column=0, padx=10, pady=10, sticky='ew')
 
             self.label_position = tk.CTkLabel(self.frame1, text="Position")
-            self.label_position.grid(row=4, column=0, padx=10, pady=10)
+            self.label_position.grid(row=4, column=1, padx=10, pady=10)
 
             self.optionmenu_for_position = tk.CTkOptionMenu(self.frame1, values=self.position_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_position.grid(row=5, column=0, padx=10, pady=10, sticky='ew')
+            self.optionmenu_for_position.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
+
             
 
             self.add_btn = tk.CTkButton(self.frame1, text="Add", command=self.add_selection)
-            self.add_btn.grid(row=5, column=1, padx=10, pady=10)
+            self.add_btn.grid(row=6, column=0,columnspan=2, padx=10, pady=10,sticky="ew")
             #######################
-            self.id_optionmenu = tk.CTkOptionMenu(self.new_root, values=self.db_manager.get_all_ids() or [""])
-            self.id_optionmenu.place(rely=0.34,relx=0.05,relheight=0.03,relwidth=0.7)
+            self.id_optionmenu = tk.CTkOptionMenu(self.new_root, values=self.db_manager.get_all_ids() or [""],command=self.update_for_new_id)
+            self.id_optionmenu.place(rely=0.34,relx=0.05,relheight=0.03,relwidth=0.75)
             # Sütun genişliklerini eşitleme
             self.delete_btn = tk.CTkButton(self.new_root,text="×",fg_color="red",command=lambda:YND("deneme","?",yes_func=lambda:print("+"),no_func=self.delete_id))
-            self.delete_btn.place(rely=0.34,relx=0.775,relheight=0.03,relwidth=0.125)
+            self.delete_btn.place(rely=0.34,relx=0.825,relheight=0.03,relwidth=0.125)
             ###########################################
-            self.horzinal = AE(self.new_root,"x")
-            self.horzinal.SpecialEntryFrame.place(rely=0.38,relx=0.0375,relheight=0.03,relwidth=0.45)
-            self.horzinal = AE(self.new_root,"y")
-            self.horzinal.SpecialEntryFrame.place(rely=0.38,relx=0.5125,relheight=0.03,relwidth=0.45)
-            self.horzinal = AE(self.new_root,"width")
-            self.horzinal.SpecialEntryFrame.place(rely=0.415,relx=0.0375,relheight=0.03,relwidth=0.45)
-            self.horzinal = AE(self.new_root,"height")
-            self.horzinal.SpecialEntryFrame.place(rely=0.415,relx=0.5125,relheight=0.03,relwidth=0.45)
+            self.entry_x = AE(self.new_root, "x",buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),x=self.entry_x.getDataWithUnit()))
+            self.entry_x.SpecialEntryFrame.place(rely=0.38, relx=0.05, relheight=0.03, relwidth=0.9)
+            self.entry_x.setValue(VP.get_number(self.db_manager.find_one_data(self.id_optionmenu.get(),"x")))
+            self.entry_x.setUnit(VP.get_unit(self.db_manager.find_one_data(self.id_optionmenu.get(),"x")))
+
+            self.entry_y = AE(self.new_root, "y",buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),y=self.entry_y.getDataWithUnit()))
+            self.entry_y.setValue(VP.get_number(self.db_manager.find_one_data(self.id_optionmenu.get(),"y")))
+            self.entry_y.setUnit(VP.get_unit(self.db_manager.find_one_data(self.id_optionmenu.get(),"y")))
+            self.entry_y.SpecialEntryFrame.place(rely=0.415, relx=0.05, relheight=0.03, relwidth=0.9)
+            
+
+            self.entry_width = AE(self.new_root, "width",buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),width=self.entry_width.getDataWithUnit()))
+            self.entry_width.setValue(VP.get_number(self.db_manager.find_one_data(self.id_optionmenu.get(),"width")))
+            self.entry_width.setUnit(VP.get_unit(self.db_manager.find_one_data(self.id_optionmenu.get(),"width")))
+            self.entry_width.SpecialEntryFrame.place(rely=0.45, relx=0.05, relheight=0.03, relwidth=0.9)
+
+            self.entry_height = AE(self.new_root, "height",buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),height=self.entry_height.getDataWithUnit()))
+            self.entry_height.SpecialEntryFrame.place(rely=0.485, relx=0.05, relheight=0.03, relwidth=0.9)
+            self.entry_height.setValue(VP.get_number(self.db_manager.find_one_data(self.id_optionmenu.get(),"height")))
+            self.entry_height.setUnit(VP.get_unit(self.db_manager.find_one_data(self.id_optionmenu.get(),"height")))
+
             #########################################
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
@@ -229,6 +251,15 @@ class ProjectApplication:
 
             if not self.show_project_content(project_directory):
                 self.back_to_main_menu()"""
+    def update_for_new_id(self,id):
+        self.entry_x.setValue(VP.get_number(self.db_manager.find_one_data(id,"x")))
+        self.entry_x.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"x")))
+        self.entry_y.setValue(VP.get_number(self.db_manager.find_one_data(id,"y")))
+        self.entry_y.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"y")))
+        self.entry_width.setValue(VP.get_number(self.db_manager.find_one_data(id,"width")))
+        self.entry_width.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"width")))
+        self.entry_height.setValue(VP.get_number(self.db_manager.find_one_data(id,"height")))
+        self.entry_height.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"height")))
     def toplevel_update(self):
         from SpecialWidgets import DynamicTable as DT
         self.back_to_main_menu()

@@ -38,9 +38,12 @@ class YesNoDiolog:
         return self.result
 
 class AdjustableEntry:
-    def __init__(self, root, label_text):
+    def __init__(self, root, label_text,add_func=None,decrease_func=None,buttons_func=None):
         self.root = root
         self.label_text = label_text
+        self.add_func=add_func
+        self.decrease_func=decrease_func
+        self.buttons_func=buttons_func
         tk.set_appearance_mode("System")
         tk.set_default_color_theme("extreme.json")
 
@@ -50,36 +53,59 @@ class AdjustableEntry:
         self.label.place(rely=0.05,relx=0.05,relheight=0.9,relwidth=0.25)
 
         self.btn_add = tk.CTkButton(self.SpecialEntryFrame, text="+", width=10, height=10,command=self.add)
-        self.btn_add.place(rely=0.2,relx=0.35,relheight=0.6,relwidth=0.15)
+        self.btn_add.place(rely=0.2,relx=0.35,relheight=0.6,relwidth=0.07)
 
 
         self.entry = tk.CTkEntry(self.SpecialEntryFrame, width=30)
-        self.entry.place(rely=0.05,relx=0.55,relheight=0.9,relwidth=0.2)
+        self.entry.place(rely=0.05,relx=0.45,relheight=0.9,relwidth=0.15)
 
         self.btn_decrease = tk.CTkButton(self.SpecialEntryFrame, text="-", width=10, height=10, command=self.decrease)
-        self.btn_decrease.place(rely=0.2,relx=0.8,relheight=0.6,relwidth=0.15)
+        self.btn_decrease.place(rely=0.2,relx=0.63,relheight=0.6,relwidth=0.07)
 
+        self.type_of_entry = tk.CTkComboBox(self.SpecialEntryFrame,values=["px","%","em","rem","cm","initial"], width=10, height=10,command=self.do_btn_func)
+        self.type_of_entry.place(rely=0.2,relx=0.75,relheight=0.6,relwidth=0.22)
         self.setValue("20")
-
+    def do_btn_func(self,data=None):
+        self.buttons_func()
     def getData(self):
         return self.entry.get()
+    def getDataWithUnit(self):
+        return self.entry.get()+self.type_of_entry.get()
 
     def setValue(self, value):
         self.entry.delete(0, 'end')  # Mevcut girişi temizler
         self.entry.insert(0, value)  # Yeni değeri ekler
-
+    def setUnit(self,unit):
+        self.type_of_entry.set(unit)
     def add(self):
         current_value = self.getData()
-        if current_value.isdigit():
-            new_value = str(int(current_value) + 1)
+        try:
+            float_value = float(current_value)
+            if float_value.is_integer():
+                float_value = int(float_value)
+            new_value = str(float_value + 1)
             self.setValue(new_value)
+        except ValueError:
+            pass
+        if self.add_func:
+            self.add_func()
+        if self.buttons_func:
+            self.buttons_func()
 
     def decrease(self):
         current_value = self.getData()
-        if current_value.isdigit():
-            new_value = str(int(current_value) - 1)
+        try:
+            float_value = float(current_value)
+            if float_value.is_integer():
+                float_value = int(float_value)
+            new_value = str(float_value - 1)
             self.setValue(new_value)
-        
+        except ValueError:
+            pass
+        if self.decrease_func:
+            self.decrease_func()
+        if self.buttons_func:
+            self.buttons_func()
 class DynamicTable:
     def __init__(self, root):
         self.root = root
