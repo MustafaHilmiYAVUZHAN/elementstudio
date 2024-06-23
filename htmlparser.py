@@ -36,7 +36,7 @@ for element in soup.find_all(True):
     
     # JSON formatında bir dictionary oluştur
     element_info = {
-        "XPath": xpath
+        "XPath": xpath.split("[document][1]")[1]
     }
     
     # Metin içeriği boş değilse ekleyelim
