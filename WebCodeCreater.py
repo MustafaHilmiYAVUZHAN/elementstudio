@@ -16,11 +16,12 @@ class CSS:
             print(class_css)
             class_css=class_css.replace(";",":")
             class_css=class_css.replace("\n","")            
-            class_css=class_css.replace(" ","")
+            
 
             print(CSS.listtodict( class_css.split(":")[:-1]))
             
-            class_dict= CSS.listtodict( class_css.split(":")[:-1])
+            class_dict= CSS.listtodict( [eleman.strip() for eleman in class_css.split(":")[:-1]])
+            print(str(class_dict))
         else:
             class_dict={}
         return class_dict
