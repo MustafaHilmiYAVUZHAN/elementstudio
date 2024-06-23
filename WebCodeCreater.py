@@ -3,6 +3,28 @@ from bs4 import BeautifulSoup
 import re
 class CSS:
     @staticmethod
+    def listtodict(lst):
+        if len(lst) % 2 != 0:
+            print(lst)
+            raise ValueError("Liste çift sayıda eleman içermelidir.")
+
+        return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+    @staticmethod
+    def stringtodict(class_css=None):
+        if class_css:
+
+            print(class_css)
+            class_css=class_css.replace(";",":")
+            class_css=class_css.replace("\n","")            
+            class_css=class_css.replace(" ","")
+
+            print(CSS.listtodict( class_css.split(":")[:-1]))
+            
+            class_dict= CSS.listtodict( class_css.split(":")[:-1])
+        else:
+            class_dict={}
+        return class_dict
+    @staticmethod
     def list_css_classes(file_path):
         # CSS dosyasını oku
         with open(file_path, 'r') as file:
@@ -16,6 +38,22 @@ class CSS:
         
         # Sınıfları döndür
         return unique_classes
+    @staticmethod
+    def get_class(file_path, class_name):
+        # CSS dosyasını oku
+        with open(file_path, 'r') as file:
+            css_content = file.read()
+        
+        # Verilen class_name'e ait CSS stilini bulmak için regex kullan
+        pattern = r'\.' + re.escape(class_name) + r'\s*{(.*?)}'
+        match = re.search(pattern, css_content, re.DOTALL)
+        
+        if match:
+            # Eşleşen CSS stilini string olarak döndür
+            return match.group(1).strip()
+        else:
+            # Eğer belirtilen sınıf bulunamazsa None döndür
+            return None
 
     @staticmethod
     def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):

@@ -223,9 +223,13 @@ class ProjectApplication:
             self.element_property = tk.CTkTabview(self.new_root)
             self.element_property.place(rely=0.63,relx=0.0125,relheight=0.28,relwidth=0.975)
             self.element_property.add("css")           
-            self.table = DT(self.element_property.tab("css"))
+            self.table = DT(self.element_property.tab("css"),class_dict=CSS.stringtodict("""display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;"""))
             self.css_property_manager = cssPM(self.table)
-            self.css_property_manager.add_css_property(class_css=None)
+            self.css_property_manager.add_css_property()
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
             self.update_btn = tk.CTkButton(self.new_root,text="update",command=self.toplevel_update)

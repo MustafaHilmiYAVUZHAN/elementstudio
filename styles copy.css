@@ -1,17 +1,35 @@
-.container {
-  position: relative;
-  height: 200px; /* Örnek olması açısından bir yükseklik belirlendi */
+.custom-class {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  cursor: pointer;
   background-color: #f0f0f0;
-  text-align: center; /* Metni ortala */
+  color: #333;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.element {
-  position: absolute;
-  left: 30%; /* Sayfanın %30'una kadar sola hizalar */
-  right: 30%; /* Sayfanın %30'una kadar sağa hizalar */
-  width: 40%; /* Örnek olması açısından bir genişlik belirlendi */
-  margin: 0 auto; /* Öğeyi yatayda merkezlemek için */
+.custom-class:hover {
+  background-color: #e0e0e0;
+}
+
+.custom-class:focus {
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.custom-class.button {
+  border: none;
+  color: white;
   background-color: #007bff;
-  color: #fff;
-  padding: 10px;
+  cursor: pointer;
+}
+
+.custom-class.button:hover {
+  background-color: #0056b3;
+}
+
+.custom-class.button:focus {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }

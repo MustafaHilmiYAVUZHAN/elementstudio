@@ -137,17 +137,20 @@ class AdjustableEntry:
         if self.buttons_func:
             self.buttons_func()
 class DynamicTable:
-    def __init__(self, root):
+    def __init__(self, root,class_dict=None):
         self.root = root
         customtkinter.set_appearance_mode("System")
         tk.set_default_color_theme("extreme.json")
         self.mainFrame = customtkinter.CTkScrollableFrame(root)
         self.widgets = {}
+        self.class_dict=class_dict
         self.mainFrame.columnconfigure(2, minsize=10)
         self.framefont = tk.CTkFont(size=25)
-    def add_row(self, label_text, content,class_dict=None):
-        if class_dict:
-            special_variable=class_dict.get(label_text)
+    def add_row(self, label_text, content):
+        if self.class_dict:
+            special_variable=self.class_dict.get(label_text)
+        else:
+            special_variable=None
         if isinstance(content, list):
             if isinstance(content[0], list):
                 inner_widgets = {}

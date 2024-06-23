@@ -1,6 +1,5 @@
 import sqlite3
 import re
-
 class ValueParser:
     @staticmethod
     def parse_value(value):
