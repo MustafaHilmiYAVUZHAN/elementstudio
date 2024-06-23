@@ -3,39 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benim Harika Websitesi</title>
+    <title>Örnek Karmaşık Web Sitesi</title>
     <style>
+        /* Genel stil ayarları */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
         }
-        h1 {
-            color: #333;
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
         }
-        p {
-            color: #666;
+        nav {
+            background-color: #444;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+        nav a:hover {
+            background-color: #555;
         }
         .container {
-            background-color: #f9f9f9;
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
             padding: 20px;
+        }
+        .main {
+            float: left;
+            width: 70%;
+        }
+        .sidebar {
+            float: left;
+            width: 30%;
+            background: #f0f0f0;
+            padding: 10px;
             margin-top: 20px;
-            border-radius: 5px;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333;
+            color: #fff;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Hoş Geldiniz!</h1>
+        <h1>Örnek Web Sitesi</h1>
     </header>
+    <nav>
+        <a href="#">Anasayfa</a>
+        <a href="#">Hakkımızda</a>
+        <a href="#">Hizmetler</a>
+        <a href="#">İletişim</a>
+    </nav>
     <div class="container">
-        <p>Bu harika bir web sitesidir.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ante ut mauris lobortis, a congue nunc finibus.</p>
+        <section class="main">
+            <h2>Hoş Geldiniz!</h2>
+            <p>Bu örnek web sitesi, HTML ve CSS kullanılarak oluşturulmuş karmaşık bir tasarıma sahiptir.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida ante ut mauris lobortis, a congue nunc finibus.</p>
+        </section>
+        <aside class="sidebar">
+            <h3>Sidebar Başlığı</h3>
+            <ul>
+                <li><a href="#">Örnek Link 1</a></li>
+                <li><a href="#">Örnek Link 2</a></li>
+                <li><a href="#">Örnek Link 3</a></li>
+                <li><a href="#">Örnek Link 4</a></li>
+            </ul>
+        </aside>
     </div>
     <footer>
-        <p>&copy; 2024 Benim Harika Websitesi. Tüm hakları saklıdır.</p>
+        <p>&copy; 2024 Örnek Web Sitesi. Tüm hakları saklıdır.</p>
     </footer>
 </body>
 </html>

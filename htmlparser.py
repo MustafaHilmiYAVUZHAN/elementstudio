@@ -1,7 +1,5 @@
-import json
 from bs4 import BeautifulSoup
-
-# HTML dosyasını oku
+import json
 with open('example.html', 'r', encoding='utf-8') as file:
     html_content = file.read()
 
@@ -24,17 +22,28 @@ result = []
 # Tüm elementleri seç ve istenen bilgileri JSON formatında listeye ekle
 for element in soup.find_all(True):
     xpath = create_xpath(element)
-    element_id = element.get('id', None)
+    element_id = element.get('id')
     element_class = ' '.join(element.get('class', []))
-    element_text = element.get_text().strip()
+    
+    # Elementin içeriğini almak için sadece direkt altındaki metni alıyoruz
+    element_text = element.get_text(separator='\n', strip=True)
+    
+    # Eğer elementin altında başka elementler varsa, içindeki metin yerine boş bırakalım
+    if element.find_all(recursive=False):
+        element_text = ""
+    elif element_text.strip() == "":
+        continue
     
     # JSON formatında bir dictionary oluştur
     element_info = {
-        "XPath": xpath,
-        "Text": element_text
+        "XPath": xpath
     }
     
-    # ID ve Class bilgilerini ekleyelim (varsa)
+    # Metin içeriği boş değilse ekleyelim
+    if element_text.strip() != "":
+        element_info["Text"] = element_text.strip()
+    
+    # ID ve Class bilgilerini ekleyelim (varsa ve boş değilse)
     if element_id:
         element_info["ID"] = element_id
     if element_class:
@@ -42,6 +51,4 @@ for element in soup.find_all(True):
     
     # Liste içine dictionary'yi ekle
     result.append(element_info)
-
-# JSON formatında çıktıyı yazdır
 print(json.dumps(result, indent=2, ensure_ascii=False))
