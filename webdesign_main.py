@@ -225,7 +225,7 @@ class ProjectApplication:
             self.element_property.add("css")           
             self.table = DT(self.element_property.tab("css"))
             self.css_property_manager = cssPM(self.table)
-            self.css_property_manager.add_css_property(class_css="color:red;")
+            self.css_property_manager.add_css_property(class_css=None)
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
             self.update_btn = tk.CTkButton(self.new_root,text="update",command=self.toplevel_update)

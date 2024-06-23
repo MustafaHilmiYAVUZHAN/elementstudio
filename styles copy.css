@@ -1,0 +1,17 @@
+.container {
+  position: relative;
+  height: 200px; /* Örnek olması açısından bir yükseklik belirlendi */
+  background-color: #f0f0f0;
+  text-align: center; /* Metni ortala */
+}
+
+.element {
+  position: absolute;
+  left: 30%; /* Sayfanın %30'una kadar sola hizalar */
+  right: 30%; /* Sayfanın %30'una kadar sağa hizalar */
+  width: 40%; /* Örnek olması açısından bir genişlik belirlendi */
+  margin: 0 auto; /* Öğeyi yatayda merkezlemek için */
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+}
