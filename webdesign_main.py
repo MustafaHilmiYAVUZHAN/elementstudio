@@ -9,8 +9,8 @@ from SpecialWidgets import AdjustableEntry as AE
 from SpecialWidgets import AdjustableComboBox as AC
 from SpecialWidgets import YesNoDiolog as YND
 from Property import CssPropertyManager as cssPM
-from WebCodeCreater import CSS as dtCSS
-
+from WebCodeCreater import CSS
+import ctypes
 import pywinstyles
 class ProjectApplication:
     def __init__(self, root):
@@ -94,19 +94,16 @@ class ProjectApplication:
     def add_selection(self):
         # Get the current selections
         html_element = self.optionmenu_for_html_element.get()
-        align = self.align_values.index(self.optionmenu_for_align.get())+1
-        valign = self.valign_values.index(self.optionmenu_for_valign.get())+1
-        float_option = self.float_values.index(self.optionmenu_for_float.get())+1
+        
         position = self.position_values.index(self.optionmenu_for_position.get())+1
-        self.id_optionmenu.set(self.db_manager.insert_data(type=html_element,padding=int(str(align)+ str(valign)+str(float_option)+str(position))))
+        self.id_optionmenu.set(self.db_manager.insert_data(type=html_element,id_name=self.id_entry.get(),padding=int(str(position)),class_=self.optionmenu_for_class.get()))
         # Add selections to the list
-        self.selections.append(["id",html_element, int(str(align)+ str(valign)+str(float_option)+str(position))])
         self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
         
         self.id_optionmenu.update()
 
         # Print the current selections list (for debugging)
-        print(self.selections)
+
     def delete_id(self):
         index=self.db_manager.get_all_ids().index(self.id_optionmenu.get())
         self.db_manager.delete_data(self.id_optionmenu.get())
@@ -126,9 +123,9 @@ class ProjectApplication:
             
             self.new_root = tk.CTkToplevel()
             self.new_root.title("Project Content")
-            
-            # Kenarlıkları ve başlık çubuğunu kaldır
             self.new_root.overrideredirect(True)
+
+            # Kenarlıkları ve başlık çubuğunu kaldır
             
             screen_width = self.new_root.winfo_screenwidth()
             screen_height = self.new_root.winfo_screenheight()
@@ -151,10 +148,8 @@ class ProjectApplication:
             self.selections = []
             # Define values for option menus
             self.html_elements = ["Button", "Input", "Label"]
-            self.align_values = ["center", "justify", "left", "right"]
-            self.valign_values = ["baseline", "top", "middle", "bottom"]
-            self.float_values = ["none", "left", "right"]
             self.position_values = ["absolute", "fixed", "static", "relative"]
+            self.class_values = CSS.list_css_classes("style.css")
             self.db_manager = DM('example_database.db')
             self.db_manager.create_table()
             # HTML Element Option Menu
@@ -164,35 +159,24 @@ class ProjectApplication:
             self.optionmenu_for_html_element = tk.CTkOptionMenu(self.frame1, values=self.html_elements, font=self.font_for_optionmenu)
             self.optionmenu_for_html_element.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
+            self.label_id = tk.CTkLabel(self.frame1, text="Id")
+            self.label_id.grid(row=0, column=1, padx=10, pady=10)
+            
+            self.id_entry = tk.CTkEntry(self.frame1)
+            self.id_entry.insert(0, "id")
+            self.id_entry.grid(row=1, column=1, padx=10, pady=10)
+
             self.label_class = tk.CTkLabel(self.frame1, text="Class")
-            self.label_class.grid(row=0, column=1, padx=10, pady=10)
+            self.label_class.grid(row=2, column=0, padx=10, pady=10)
 
-            self.optionmenu_for_class = tk.CTkOptionMenu(self.frame1, values=[""], font=self.font_for_optionmenu)
-            self.optionmenu_for_class.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
-
-            self.label_align = tk.CTkLabel(self.frame1, text="Align")
-            self.label_align.grid(row=2, column=0, padx=10, pady=10)
-
-            self.optionmenu_for_align = tk.CTkOptionMenu(self.frame1, values=self.align_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_align.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
-
-            self.label_valign = tk.CTkLabel(self.frame1, text="VAlign")
-            self.label_valign.grid(row=2, column=1, padx=10, pady=10)
-
-            self.optionmenu_for_valign = tk.CTkOptionMenu(self.frame1, values=self.valign_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_valign.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
-
-            self.label_float = tk.CTkLabel(self.frame1, text="Float")
-            self.label_float.grid(row=4, column=0, padx=10, pady=10)
-
-            self.optionmenu_for_float = tk.CTkOptionMenu(self.frame1, values=self.float_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_float.grid(row=5, column=0, padx=10, pady=10, sticky='ew')
+            self.optionmenu_for_class = tk.CTkOptionMenu(self.frame1, values=self.class_values, font=self.font_for_optionmenu)
+            self.optionmenu_for_class.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
 
             self.label_position = tk.CTkLabel(self.frame1, text="Position")
-            self.label_position.grid(row=4, column=1, padx=10, pady=10)
+            self.label_position.grid(row=2, column=1, padx=10, pady=10)
 
             self.optionmenu_for_position = tk.CTkOptionMenu(self.frame1, values=self.position_values, font=self.font_for_optionmenu)
-            self.optionmenu_for_position.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
+            self.optionmenu_for_position.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
 
             
 
@@ -226,10 +210,13 @@ class ProjectApplication:
             self.entry_height.setValue(VP.get_number(self.db_manager.find_one_data(self.id_optionmenu.get(),"height")))
             self.entry_height.setUnit(VP.get_unit(self.db_manager.find_one_data(self.id_optionmenu.get(),"height")))
 
-            self.combobox_align = AC(self.new_root,"align",values=self.align_values)
-            self.combobox_align.SpecialComboBoxFrame.place(rely=0.520, relx=0.05, relheight=0.03, relwidth=0.440)
-            self.combobox_valign = AC(self.new_root,"valign",values=self.valign_values)
-            self.combobox_valign.SpecialComboBoxFrame.place(rely=0.520, relx=0.51, relheight=0.03, relwidth=0.440)
+            self.combobox_position = AC(self.new_root,"Position",values=self.position_values,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),padding=int(self.position_values.index(self.combobox_position.getData()))+1))
+            self.combobox_position.SpecialComboBoxFrame.place(rely=0.520, relx=0.05, relheight=0.03, relwidth=0.440)
+            self.combobox_Class = AC(self.new_root,"Class",values=self.class_values,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),class_=self.combobox_Class.getData()))
+            self.combobox_Class.SpecialComboBoxFrame.place(rely=0.520, relx=0.51, relheight=0.03, relwidth=0.440)
+            self.combobox_html_element = AC(self.new_root,"Type",values=self.html_elements,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),type=self.combobox_html_element.getData()))
+            self.combobox_html_element.SpecialComboBoxFrame.place(rely=0.555, relx=0.05, relheight=0.03, relwidth=0.440)
+
             #########################################
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
@@ -238,7 +225,7 @@ class ProjectApplication:
             self.element_property.add("css")           
             self.table = DT(self.element_property.tab("css"))
             self.css_property_manager = cssPM(self.table)
-            self.css_property_manager.add_css_property()
+            self.css_property_manager.add_css_property(class_css="color:red;")
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
             self.update_btn = tk.CTkButton(self.new_root,text="update",command=self.toplevel_update)
@@ -249,7 +236,7 @@ class ProjectApplication:
             back_button.place(rely=0.92,relx=0.025,relwidth=0.4)
             back_button = tk.CTkButton(self.new_root, text="Exit", command=lambda:exit(),hover_color="red")
             back_button.place(rely=0.92,relx=0.45,relwidth=0.1)
-            print(dtCSS.dict_to_css(self.table.all_data_in_wigdet()))
+            print(CSS.dict_to_css(self.table.all_data_in_wigdet()))
             """ # Listbox to show project content
             self.file_listbox = Listbox(self.new_root)
             self.file_listbox.pack(fill="both", expand=True)
@@ -265,8 +252,16 @@ class ProjectApplication:
         self.entry_width.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"width")))
         self.entry_height.setValue(VP.get_number(self.db_manager.find_one_data(id,"height")))
         self.entry_height.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"height")))
+        self.combobox_Class.setValue(self.db_manager.find_one_data(id,"class"))
+        self.combobox_position.setValue(self.position_values[self.db_manager.find_one_data(id,"padding")-1])
+        self.combobox_html_element.setValue(self.db_manager.find_one_data(id,"type"))
+
     def toplevel_update(self):
         from SpecialWidgets import DynamicTable as DT
+        # def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
+        id= self.id_optionmenu.get()
+        print(CSS.convert_to_id_css("",id,self.db_manager.find_one_data(id,"padding"),self.db_manager.find_one_data(id,"x"),self.db_manager.find_one_data(id,"y"),self.db_manager.find_one_data(id,"width"),self.db_manager.find_one_data(id,"height"),self.db_manager.find_one_data(id,"class"),"" ))
+
         self.back_to_main_menu()
         self.open_new_window("")
     def back_to_main_menu(self):
@@ -316,7 +311,7 @@ class ProjectApplication:
             messagebox.showerror("Error", error_message)
         else:
             print("Project is complete and ready.")
-
+ 
     def new_project(self):
         # Create a new project
         target_directory = filedialog.askdirectory()

@@ -1,6 +1,7 @@
 import customtkinter as tk
 import customtkinter
 import pywinstyles
+from DatabaseManager import ValueParser as VP
 class YesNoDiolog:
     def __init__(self, title,label, yes_func=None, no_func=None):
         self.root = tk.CTkToplevel()
@@ -48,11 +49,19 @@ class AdjustableComboBox:
         self.SpecialComboBoxFrame = tk.CTkFrame(self.root,fg_color="#666666")
 
         self.label = tk.CTkLabel(self.SpecialComboBoxFrame, text=self.label_text,fg_color="#666666")
-        self.label.place(rely=0.05,relx=0.05,relheight=0.9,relwidth=0.25)
+        self.label.place(rely=0.05,relx=0.05,relheight=0.9,relwidth=0.3)
         self.ComboBox = tk.CTkComboBox(self.SpecialComboBoxFrame,values=self.values,command=self.do_btn_func)
-        self.ComboBox.place(rely=0.05,relx=0.35,relheight=0.9,relwidth=0.60)
+        self.ComboBox.place(rely=0.15,relx=0.35,relheight=0.7,relwidth=0.60)
+        self.ComboBox.bind("<FocusOut>",self.do_btn_func)
+        self.ComboBox.bind("<Button-1>",self.do_btn_func)
+        self.ComboBox.bind("<Return>",self.do_btn_func)
     def do_btn_func(self,data=None):
-        self.buttons_func()
+        if self.buttons_func:
+            self.buttons_func()
+    def getData(self):
+        return self.ComboBox.get()
+    def setValue(self, value):
+        self.ComboBox.set(value)# Yeni değeri ekler
 
 class AdjustableEntry:
     def __init__(self, root, label_text,add_func=None,decrease_func=None,buttons_func=None):
@@ -81,9 +90,13 @@ class AdjustableEntry:
 
         self.type_of_entry = tk.CTkComboBox(self.SpecialEntryFrame,values=["px","%","em","rem","cm","initial"], width=10, height=10,command=self.do_btn_func)
         self.type_of_entry.place(rely=0.2,relx=0.75,relheight=0.6,relwidth=0.22)
+        self.type_of_entry.bind("<FocusOut>",self.do_btn_func)
+        self.type_of_entry.bind("<Button-1>",self.do_btn_func)
+        self.type_of_entry.bind("<Return>",self.do_btn_func)
         self.setValue("20")
     def do_btn_func(self,data=None):
-        self.buttons_func()
+        if self.buttons_func:
+            self.buttons_func()
     def getData(self):
         return self.entry.get()
     def getDataWithUnit(self):
@@ -132,7 +145,9 @@ class DynamicTable:
         self.widgets = {}
         self.mainFrame.columnconfigure(2, minsize=10)
         self.framefont = tk.CTkFont(size=25)
-    def add_row(self, label_text, content):
+    def add_row(self, label_text, content,class_dict=None):
+        if class_dict:
+            special_variable=class_dict.get(label_text)
         if isinstance(content, list):
             if isinstance(content[0], list):
                 inner_widgets = {}
@@ -147,10 +162,17 @@ class DynamicTable:
                             label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                             entry = customtkinter.CTkEntry(self.mainFrame,width=80)
                             entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
-                            entry.insert(0, item[1][0])
+                            if special_variable:
+                                entry.insert(0, VP.get_number(special_variable))
+                            else:
+                                entry.insert(0,item[1][0])
+
                             combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1][1], width=70)
                             combobox.grid(row=len(self.mainFrame.grid_slaves()) - 2, column=2, padx=5, pady=5, sticky='w')
-                            #combobox.set(content[1][0])
+                            if special_variable:
+                                combobox.set(VP.get_unit(special_variable))
+                            else:
+                                pass
                             inner_widgets[label_text] = (label, entry, combobox)
                         else:
                             
@@ -158,14 +180,21 @@ class DynamicTable:
                             sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                             combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1],width=160)
                             combobox.grid(row=len(self.mainFrame.grid_slaves())-1, column=1,columnspan=2, padx=5, pady=2, sticky='w')
-                            combobox.set(item[1][0])
+                            if special_variable:
+                                combobox.set(special_variable)
+                            else:
+                                pass
                             inner_widgets[item[0]] = (sub_label, combobox)
                     else:
                         sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
                         sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                         entry = customtkinter.CTkEntry(self.mainFrame,width=160)
                         entry.grid(row=len(self.mainFrame.grid_slaves())-1, column=1, columnspan=2, padx=5, pady=2, sticky='w')
-                        entry.insert(0, item[1])
+                        
+                        if special_variable:
+                            entry.insert(0, special_variable)
+                        else:
+                            entry.insert(0, item[1])
                         inner_widgets[item[0]] = (sub_label, entry)
                 self.widgets[label_text] = inner_widgets
             else:
@@ -174,24 +203,37 @@ class DynamicTable:
                     label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
                     entry = customtkinter.CTkEntry(self.mainFrame,width=80)
                     entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
-                    entry.insert(0, content[0])
+                    if special_variable:
+                        entry.insert(0,VP.get_number(special_variable))
+                    else:
+                        entry.insert(0, content[0])
                     combobox = customtkinter.CTkComboBox(self.mainFrame, values=content[1], width=70)
                     combobox.grid(row=len(self.mainFrame.grid_slaves()) - 2, column=2, padx=5, pady=5, sticky='w')
-                    combobox.set(content[1][0])
+                    if special_variable:
+                        combobox.set(VP.get_unit(special_variable))
+                    else:
+                        combobox.set(content[1][0])
                     self.widgets[label_text] = (label, entry, combobox)
                 else:
                     label = customtkinter.CTkLabel(self.mainFrame, text=label_text)
                     label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
                     combobox = customtkinter.CTkComboBox(self.mainFrame, values=content,width=160)
                     combobox.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, columnspan=2, padx=5, pady=5, sticky='w')
-                    combobox.set(content[0])
+
+                    if special_variable:
+                        combobox.set(special_variable)
+                    else:
+                        combobox.set(content[0])
                     self.widgets[label_text] = (label, combobox)
         else:
             label = customtkinter.CTkLabel(self.mainFrame, text=label_text)
             label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=5, pady=5, sticky='w')
             entry = customtkinter.CTkEntry(self.mainFrame,width=160)
             entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, columnspan=3, padx=5, pady=5,sticky='w' )
-            entry.insert(0, content)
+            if special_variable:
+                entry.insert(0, special_variable)
+            else:
+                entry.insert(0, content)
             self.widgets[label_text] = (label, entry)
 
     def find_widget(self, label_text):

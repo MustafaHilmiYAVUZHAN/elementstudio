@@ -1,14 +1,27 @@
 import json
 from bs4 import BeautifulSoup
+import re
 class CSS:
+    @staticmethod
+    def list_css_classes(file_path):
+        # CSS dosyasını oku
+        with open(file_path, 'r') as file:
+            css_content = file.read()
+        
+        # CSS sınıflarını (class) bulmak için regex kullan
+        classes = re.findall(r'\.([a-zA-Z0-9_-]+)\s*{', css_content)
+        
+        # Benzersiz sınıfları listele
+        unique_classes = list(set(classes))
+        
+        # Sınıfları döndür
+        return unique_classes
+
     @staticmethod
     def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
         avfp = str(avfp)
-        align, valign, floating, position = avfp[0], avfp[1], avfp[2], avfp[3]
+        position=avfp
         css_template = f"""#{element_id} {{
-        text-align: {align};
-        vertical-align: {valign};
-        float: {'none' if floating == '0' else 'left' if floating == '1' else 'right'};
         position: {'absolute' if position == '0' else 'fixed' if position == '1' else 'static' if position == '2' else 'relative'};
         left: {x}px;
         top: {y}px;
@@ -138,9 +151,11 @@ class HTML:
 
 # Kullanım örneği:
 # HTML'i parse etmek için
-file_path = 'example.html'
-parsed_data = HTML.convert_to_json(file_path, readinfolder=True)
+if __name__ == "__main__":
 
-# JSON verisini HTML'e dönüştürmek için
-generated_html = HTML.convert_to_html(parsed_data)
-print(generated_html)
+    file_path = 'example.html'
+    parsed_data = HTML.convert_to_json(file_path, readinfolder=True)
+
+    # JSON verisini HTML'e dönüştürmek için
+    generated_html = HTML.convert_to_html(parsed_data)
+    print(generated_html)
