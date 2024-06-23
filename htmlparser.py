@@ -1,5 +1,7 @@
-from bs4 import BeautifulSoup
 import json
+from bs4 import BeautifulSoup
+
+# HTML dosyasını oku
 with open('example.html', 'r', encoding='utf-8') as file:
     html_content = file.read()
 
@@ -9,12 +11,13 @@ soup = BeautifulSoup(html_content, 'html.parser')
 # Tüm elementleri seçmek için XPath oluştur
 def create_xpath(element):
     components = []
-    for parent in element.parents:
-        if parent.name:
-            index = sum(1 for previous_sibling in parent.find_previous_siblings(parent.name)) + 1
-            components.append(f"{parent.name}[{index}]")
+    while element:
+        siblings = element.find_previous_siblings(element.name)
+        position = len(siblings) + 1
+        components.append(f"{element.name}[{position}]")
+        element = element.parent
     components.reverse()
-    return '/'.join(components) + '/' + element.name
+    return '/' + '/'.join(components)
 
 # Liste için boş bir liste oluştur
 result = []
@@ -22,8 +25,9 @@ result = []
 # Tüm elementleri seç ve istenen bilgileri JSON formatında listeye ekle
 for element in soup.find_all(True):
     xpath = create_xpath(element)
-    element_id = element.get('id')
-    element_class = ' '.join(element.get('class', []))
+    
+    # Elementin tüm argümanlarını al
+    element_attrs = element.attrs
     
     # Elementin içeriğini almak için sadece direkt altındaki metni alıyoruz
     element_text = element.get_text(separator='\n', strip=True)
@@ -36,19 +40,20 @@ for element in soup.find_all(True):
     
     # JSON formatında bir dictionary oluştur
     element_info = {
-        "XPath": xpath.split("[document][1]")[1]
+        "XPath": xpath
     }
     
     # Metin içeriği boş değilse ekleyelim
     if element_text.strip() != "":
         element_info["Text"] = element_text.strip()
     
-    # ID ve Class bilgilerini ekleyelim (varsa ve boş değilse)
-    if element_id:
-        element_info["ID"] = element_id
-    if element_class:
-        element_info["Class"] = element_class
+    # Tüm mevcut argümanları ekleyelim (varsa ve boş değilse)
+    for attr, value in element_attrs.items():
+        if value:
+            element_info[attr.capitalize()] = value if isinstance(value, str) else ' '.join(value)
     
     # Liste içine dictionary'yi ekle
     result.append(element_info)
+
+# Sonuç listesini döndür
 print(json.dumps(result, indent=2, ensure_ascii=False))
