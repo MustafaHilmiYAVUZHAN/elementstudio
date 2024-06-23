@@ -353,37 +353,6 @@ class CssPropertyManager:
             "column dense"
         ])
         
-    def convert_to_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
-        avfp = str(avfp)
-        align, valign, floating, position = avfp[0], avfp[1], avfp[2], avfp[3]
-        css_template = f"""#{element_id} {{
-        text-align: {align};
-        vertical-align: {valign};
-        float: {'none' if floating == '0' else 'left' if floating == '1' else 'right'};
-        position: {'absolute' if position == '0' else 'fixed' if position == '1' else 'static' if position == '2' else 'relative'};
-        left: {x}px;
-        top: {y}px;
-        width: {width}px;
-        height: {height}px;
-        }}
-        """
-
-        return css_template, element_class
     
-class DictToCSS:
-    def __init__(self, style_dict):
-        self.style_dict=style_dict
-    def dict_to_css(style_dict):
-        css = ""
-        for key, value in style_dict.items():
-            if isinstance(value, dict):
-                # Eğer değer bir sözlükse (örneğin 'flex' özelliği gibi)
-                css += f"{key}: "
-                for sub_key, sub_value in value.items():
-                    css += f"{sub_value} "
-                css = css.rstrip() + ";\n"
-            else:
-                css += f"{key}: {value};\n"
-        print(css.rstrip())
-        return css.rstrip()
+    
 

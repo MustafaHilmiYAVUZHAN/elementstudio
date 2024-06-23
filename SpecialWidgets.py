@@ -36,6 +36,23 @@ class YesNoDiolog:
     def show(self):
         self.root.mainloop()
         return self.result
+class AdjustableComboBox:
+    def __init__(self,root, label_text,buttons_func=None,values=["1","2"]):
+        self.root = root
+        self.label_text = label_text
+        self.buttons_func=buttons_func
+        self.values=values
+        tk.set_appearance_mode("System")
+        tk.set_default_color_theme("extreme.json")
+
+        self.SpecialComboBoxFrame = tk.CTkFrame(self.root,fg_color="#666666")
+
+        self.label = tk.CTkLabel(self.SpecialComboBoxFrame, text=self.label_text,fg_color="#666666")
+        self.label.place(rely=0.05,relx=0.05,relheight=0.9,relwidth=0.25)
+        self.ComboBox = tk.CTkComboBox(self.SpecialComboBoxFrame,values=self.values,command=self.do_btn_func)
+        self.ComboBox.place(rely=0.05,relx=0.35,relheight=0.9,relwidth=0.60)
+    def do_btn_func(self,data=None):
+        self.buttons_func()
 
 class AdjustableEntry:
     def __init__(self, root, label_text,add_func=None,decrease_func=None,buttons_func=None):

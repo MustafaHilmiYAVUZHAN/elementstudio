@@ -6,9 +6,10 @@ from DatabaseManager import DM
 from DatabaseManager import ValueParser as VP
 from SpecialWidgets import DynamicTable as DT
 from SpecialWidgets import AdjustableEntry as AE
+from SpecialWidgets import AdjustableComboBox as AC
 from SpecialWidgets import YesNoDiolog as YND
 from Property import CssPropertyManager as cssPM
-from Property import DictToCSS as dtCSS
+from WebCodeCreater import CSS as dtCSS
 
 import pywinstyles
 class ProjectApplication:
@@ -142,7 +143,7 @@ class ProjectApplication:
             self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
             pywinstyles.apply_style(self.new_root,"acrylic")
             self.frame1 = tk.CTkFrame(self.new_root)
-            self.frame1.place(rely=0.015,relx=0.025,relheight=0.3,relwidth=0.95)
+            self.frame1.place(rely=0.015,relx=0.025,relheight=0.32,relwidth=0.95)
             
             self.font_for_optionmenu = ("Arial", 12)  # Assuming you have defined this font
             
@@ -225,6 +226,10 @@ class ProjectApplication:
             self.entry_height.setValue(VP.get_number(self.db_manager.find_one_data(self.id_optionmenu.get(),"height")))
             self.entry_height.setUnit(VP.get_unit(self.db_manager.find_one_data(self.id_optionmenu.get(),"height")))
 
+            self.combobox_align = AC(self.new_root,"align",values=self.align_values)
+            self.combobox_align.SpecialComboBoxFrame.place(rely=0.520, relx=0.05, relheight=0.03, relwidth=0.440)
+            self.combobox_valign = AC(self.new_root,"valign",values=self.valign_values)
+            self.combobox_valign.SpecialComboBoxFrame.place(rely=0.520, relx=0.51, relheight=0.03, relwidth=0.440)
             #########################################
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)
