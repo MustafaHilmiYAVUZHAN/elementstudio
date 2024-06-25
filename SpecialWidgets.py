@@ -2,6 +2,8 @@ import customtkinter as tk
 import customtkinter
 import pywinstyles
 from DatabaseManager import ValueParser as VP
+
+        
 class YesNoDiolog:
     def __init__(self, title,label, yes_func=None, no_func=None):
         self.root = tk.CTkToplevel()

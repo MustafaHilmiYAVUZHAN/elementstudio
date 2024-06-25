@@ -3,6 +3,59 @@ from bs4 import BeautifulSoup
 import re
 class CSS:
     @staticmethod
+    def select_sub_class(css,start_selector,readinfile=True):
+        soup = BeautifulSoup(css_code, 'html.parser')
+
+        # Extract the desired CSS rules
+        start_selector = ".standart-class .button:hover"
+        in_block = False
+        result = ""
+
+        for line in css_code.split("\n"):
+            if line.strip().startswith(start_selector):
+                in_block = True
+            if in_block:
+                result += line + "\n"
+                if "}" in line:
+                    in_block = False
+
+        # Output the extracted CSS code
+        return result.strip()
+    @staticmethod
+    def css_to_json(css,readinfile=True):
+        if readinfile:
+            css=CSS.read_css_file(css)
+        lines = css.strip().splitlines()
+        json_output = {}
+        current_selector = None
+        current_properties = {}
+
+        for line in lines:
+            line = line.strip()
+            
+            if not line:
+                continue
+            
+            if line.startswith('.') or line.startswith('#')  :
+                current_selector = line.split('{')[0].strip()
+                current_properties = {}
+            elif line.startswith('}'):
+                if current_selector:
+                    json_output[current_selector] = current_properties
+                    current_selector = None
+                    current_properties = {}
+            else:
+                try:
+                    prop, value = line.split(':')
+                except:
+                    print(line.split(':'))
+                prop = prop.strip()
+                value = value.strip().rstrip(';')
+                current_properties[prop] = value
+        
+        return json_output
+
+    @staticmethod
     def listtodict(lst):
         if len(lst) % 2 != 0:
             print(lst)
@@ -26,19 +79,47 @@ class CSS:
             class_dict={}
         return class_dict
     @staticmethod
-    def list_css_classes(file_path):
-        # CSS dosyasını oku
-        with open(file_path, 'r') as file:
-            css_content = file.read()
+    def extract_all_id_styles(css,readinfile=True):
+        if readinfile:
+            css=CSS.read_css_file(css)
+        id_styles = {}
+        pattern = re.compile(r'#([\w-]+)\s*{([^}]*)}', re.MULTILINE)
+        matches = pattern.findall(css)
+        for match in matches:
+            id_name = match[0]
+            styles = match[1].strip()
+            id_styles[id_name] = styles
+        return id_styles
+    @staticmethod
+    def list_css_classes(css,readinfile=True):
+        if readinfile:
+            css=CSS.read_css_file(css)
+        main_classes = []
+        lines = css.splitlines()
+        for line in lines:
+            if line.strip().endswith('{'):
+                class_name = line.split('{')[0].strip()
+                main_classes.append(class_name)
+        return main_classes
+    @staticmethod
+    def list_main(item):
+        return list(set([item.split()[0] for item in item]))
+    @staticmethod
+    def group_by_first_word(items):
+        # Dictionary to hold groups
+        from collections import defaultdict
+        groups = defaultdict(list)
         
-        # CSS sınıflarını (class) bulmak için regex kullan
-        classes = re.findall(r'\.([a-zA-Z0-9_-]+)\s*{', css_content)
+        # Her bir öğe için
+        for item in items:
+            # İlk kelimeyi bul
+            first_word = item.split()[0]
+            # Geri kalan kısmı al (ilk kelimeyi atla)
+            rest_of_words = ' '.join(item.split()[1:])
+            # Grupları oluştur
+            groups[first_word].append(rest_of_words)
         
-        # Benzersiz sınıfları listele
-        unique_classes = list(set(classes))
-        
-        # Sınıfları döndür
-        return unique_classes
+        return dict(groups)
     @staticmethod
     def get_class(file_path, class_name):
         # CSS dosyasını oku
@@ -55,9 +136,14 @@ class CSS:
         else:
             # Eğer belirtilen sınıf bulunamazsa None döndür
             return None
-
     @staticmethod
-    def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
+    def no_pseudo_class(liste):
+        return [eleman for eleman in liste if ':' not in eleman]
+    @staticmethod
+    def find_pseude_class(liste,key):
+        return [item.split(key)[1] for item in liste if item.startswith(key)]
+    @staticmethod
+    def convert_to_id_css(element_type, element_id, avfp, x, y, witableh, height, element_class,extra_css):
         avfp = str(avfp)
         position=avfp
         css_template = f"""#{element_id} {{
@@ -71,6 +157,16 @@ class CSS:
         """
 
         return css_template
+    @staticmethod
+    def read_css_file(filename):
+        css_data = ""
+        try:
+            with open(filename, 'r') as file:
+                css_data = file.read()
+            return css_data
+        except FileNotFoundError:
+            print(f"Error: The file '{filename}' was not found.")
+            return None
     @staticmethod
     def dict_to_css(style_dict,class_=None):
         if class_:
@@ -88,7 +184,11 @@ class CSS:
                 css += f"{key}: {value};\n"
         print(css.rstrip())
         return css.rstrip()
-class HTML:
+    @staticmethod
+    def filter_class(liste):
+        return [item for item in liste if item.startswith(".") ]
+class HTML: 
+
     @staticmethod
     def convert_to_json(data, readinfolder=False):
         if readinfolder:
@@ -142,6 +242,7 @@ class HTML:
             return f"<{tag_name} {attr_str}>{text}"
         else:
             return f"<{tag_name}>{text}"
+    
 
     @staticmethod
     def convert_to_html(json_data):
@@ -192,9 +293,124 @@ class HTML:
 # HTML'i parse etmek için
 if __name__ == "__main__":
 
-    file_path = 'example.html'
-    parsed_data = HTML.convert_to_json(file_path, readinfolder=True)
+    css_code = """
+.special-class {
+  margin: 0.5cm;
+  padding: 0.5;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+.standart-class {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
 
-    # JSON verisini HTML'e dönüştürmek için
-    generated_html = HTML.convert_to_html(parsed_data)
-    print(generated_html)
+.standart-class .body {
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.standart-class .h1 {
+  margin: 20px 0;
+  color: #222;
+  line-height: 1.2;
+  font-size: 2.5em;
+}
+
+.standart-class .h2 {
+  margin: 20px 0;
+  color: #222;
+  line-height: 1.2;
+  font-size: 2em;
+}
+
+.standart-class .h3 {
+  margin: 20px 0;
+  color: #222;
+  line-height: 1.2;
+  font-size: 1.75em;
+}
+
+.standart-class .h4 {
+  margin: 20px 0;
+  color: #222;
+  line-height: 1.2;
+  font-size: 1.5em;
+}
+
+.standart-class .h5 {
+  margin: 20px 0;
+  color: #222;
+  line-height: 1.2;
+  font-size: 1.25em;
+}
+
+.standart-class .h6 {
+  margin: 20px 0;
+  color: #222;
+  font-size: 1em;
+  line-height: 1.2;
+}
+
+.standart-class .p {
+  margin-bottom: 15px;
+}
+
+.standart-class .a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.standart-class .a:hover {
+  text-decoration: underline;
+}
+
+.standart-class .ul{
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
+.standart-class .ol {
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
+.standart-class .li {
+  margin-bottom: 10px;
+}
+
+.standart-class .button {
+  background-color: #0066cc;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.standart-class .button:hover {
+  background-color: #004999;
+}
+"""
+
+    # CSS'i JSON formatına dönüştür
+    json_output = CSS.css_to_json("styles.css")
+
+    # JSON çıktısını yazdır
+    import json
+    print(json.dumps(json_output, indent=2))
+    print(json_output[list(json_output.keys())[0]])
+    print(CSS.list_main(CSS.list_css_classes("styles.css")))
+    print("mmmmmmmmmmmmmm")
+    print(CSS.list_css_classes("styles.css"))
+
+    print(CSS.group_by_first_word(CSS.list_css_classes("styles.css")))
+    print(CSS.extract_all_id_styles("styles.css"))
+    
+"""    print(CSS.find_main_classes(css_code))"""

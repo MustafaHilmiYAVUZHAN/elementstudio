@@ -101,7 +101,7 @@ class ProjectApplication:
         self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
         
         self.id_optionmenu.update()
-
+    
         # Print the current selections list (for debugging)
 
     def delete_id(self):
@@ -113,22 +113,56 @@ class ProjectApplication:
         except:
             self.id_optionmenu.set("")
         self.id_optionmenu.update()
+    def update_sub_class_chooser(self,class_):
+        self.list_sub_class_chooser=CSS.group_by_first_word(CSS.list_css_classes("styles.css"))[class_]
+        self.list_sub_class_chooser[0]="Base"
+        self.sub_class_chooser.configure(values=CSS.no_pseudo_class(self.list_sub_class_chooser))
+        self.sub_class_chooser.set(self.list_sub_class_chooser[0])
+    def update_pseudo_class_chooser(self,sub_class):
+        
+        self.pseudo_classes=CSS.find_pseude_class(self.list_sub_class_chooser,sub_class)
+        self.pseudo_classes[0]=":normal"
+        self.pseudo_class_chooser.configure(values=self.pseudo_classes)
+        self.pseudo_class_chooser.set(self.pseudo_classes[0])
+    def open_new_window(self, project_directory=None,type="ClassShower"):
+        if type=="ClassShower":
+            self.Class_shower =tk.CTkToplevel()
+            self.root = root
 
-    def open_new_window(self, project_directory):
-        #if self.check_project_content(project_directory):
-        if 1:    
+            self.root.withdraw()
+            self.Class_shower.protocol("WM_DELETE_WINDOW", self.Class_shower.destroy)
+            self.Class_shower.title("Classes")
+            self.Class_shower.resizable(0, 0)
+            pywinstyles.apply_style(self.Class_shower,"acrylic")
+            self.class_values = CSS.filter_class(CSS.list_main(CSS.list_css_classes("styles.css")))
+            self.class_chooser=tk.CTkOptionMenu(self.Class_shower,values=self.class_values,command=self.update_sub_class_chooser)
+            self.class_chooser.grid(row=0,column=0)
+            self.sub_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""],command=self.update_pseudo_class_chooser)
+            self.sub_class_chooser.grid(row=1,column=0)
+            self.pseudo_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""])
+            self.pseudo_class_chooser.grid(row=2,column=0)
+            self.table_for_class=DT(self.Class_shower)
+            cssPM.add_css_property(self.table_for_class)
+            
+            self.table_for_class.mainFrame.grid(row=3,column=0)
+            self.update_sub_class_chooser(self.class_chooser.get())
+            self.update_pseudo_class_chooser(self.sub_class_chooser.get())
+        if self.check_project_content(project_directory) and type=="NewProjectWindow":  
             self.root = root
 
             self.root.withdraw()  # Hide the main window
-            
             self.new_root = tk.CTkToplevel()
-            self.new_root.title("Project Content")
             self.new_root.overrideredirect(True)
+  
 
+            screen_width = self.new_root.winfo_screenwidth()
+            screen_height = self.new_root.winfo_screenheight()            
+            
+            
+            self.new_root.title("Project Content")
             # Kenarlıkları ve başlık çubuğunu kaldır
             
-            screen_width = self.new_root.winfo_screenwidth()
-            screen_height = self.new_root.winfo_screenheight()
+            self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
             self.new_root.resizable(0, 0)
             
             # Pencere boyutunu ve konumunu ayarla
@@ -137,7 +171,6 @@ class ProjectApplication:
             
             # Pencereyi sol üst köşeye konumlandır
             self.new_root.geometry(f"{window_width}x{window_height}+0+0")
-            self.new_root.protocol("WM_DELETE_WINDOW", self.new_root.destroy)
             pywinstyles.apply_style(self.new_root,"acrylic")
             self.frame1 = tk.CTkFrame(self.new_root)
             self.frame1.place(rely=0.015,relx=0.025,relheight=0.32,relwidth=0.95)
@@ -228,11 +261,11 @@ class ProjectApplication:
     color: #fff;
     text-decoration: none;
     border-radius: 5px;"""))
-            self.css_property_manager = cssPM(self.table)
-            self.css_property_manager.add_css_property()
+            cssPM.add_css_property(self.table)
+
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
-            self.update_btn = tk.CTkButton(self.new_root,text="update",command=self.toplevel_update)
+            self.update_btn = tk.CTkButton(self.new_root,text="update",command=lambda:self.toplevel_update(project_directory))
             self.update_btn.place(rely=0.92,relx=0.575,relwidth=0.4)
             print(self.table.all_data_in_wigdet())
             # Add a button to return to the main window
@@ -260,14 +293,14 @@ class ProjectApplication:
         self.combobox_position.setValue(self.position_values[self.db_manager.find_one_data(id,"padding")-1])
         self.combobox_html_element.setValue(self.db_manager.find_one_data(id,"type"))
 
-    def toplevel_update(self):
+    def toplevel_update(self,project_directory):
         from SpecialWidgets import DynamicTable as DT
         # def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
         id= self.id_optionmenu.get()
         print(CSS.convert_to_id_css("",id,self.db_manager.find_one_data(id,"padding"),self.db_manager.find_one_data(id,"x"),self.db_manager.find_one_data(id,"y"),self.db_manager.find_one_data(id,"width"),self.db_manager.find_one_data(id,"height"),self.db_manager.find_one_data(id,"class"),"" ))
 
         self.back_to_main_menu()
-        self.open_new_window("")
+        self.open_new_window(project_directory=project_directory)
     def back_to_main_menu(self):
         self.new_root.destroy()  # Close the new window
         self.root.deiconify()    # Show the main window
@@ -329,8 +362,7 @@ class ProjectApplication:
                     os.makedirs(target_directory, exist_ok=True)
             self.create_project(target_directory)
             self.save_project_path(target_directory)
-            self.open_new_window(target_directory)
-
+            self.open_new_window(project_directory=target_directory)
     def old_project(self):
         # Select an old project
         folder_path = filedialog.askdirectory()
@@ -338,12 +370,12 @@ class ProjectApplication:
             print("Selected folder path:", folder_path)
             self.check_project(folder_path)
             self.save_project_path(folder_path)
-            self.open_new_window(folder_path)
+            self.open_new_window(project_directory=folder_path)
 
     def open_project(self, file_path):
         print("Opened project file path:", file_path)
         self.save_project_path(file_path)
-        self.open_new_window(file_path)
+        self.open_new_window(project_directory=file_path)
 
 if __name__ == "__main__":
     root = tk.CTk()

@@ -1,33 +1,10 @@
-def css_to_json(css):
-    lines = css.strip().splitlines()
-    json_output = {}
-    current_selector = None
-    current_properties = {}
-
-    for line in lines:
-        line = line.strip()
-        
-        if not line:
-            continue
-        
-        if line.startswith('.'):
-            current_selector = line.split('{')[0].strip()
-            current_properties = {}
-        elif line.startswith('}'):
-            if current_selector:
-                json_output[current_selector] = current_properties
-                current_selector = None
-                current_properties = {}
-        else:
-            prop, value = line.split(':')
-            prop = prop.strip()
-            value = value.strip().rstrip(';')
-            current_properties[prop] = value
-    
-    return json_output
-
-# Örnek CSS
 css_code = """
+.special-class {
+  margin: 0.5cm;
+  padding: 0.5;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
 .standart-class {
   margin: 0;
   padding: 0;
@@ -97,7 +74,11 @@ css_code = """
   text-decoration: underline;
 }
 
-.standart-class .ul,
+.standart-class .ul{
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
 .standart-class .ol {
   margin: 20px 0;
   padding-left: 20px;
@@ -123,9 +104,7 @@ css_code = """
 }
 """
 
-# CSS'i JSON formatına dönüştür
-json_output = css_to_json(css_code)
+# Extract the desired CSS rules
 
-# JSON çıktısını yazdır
-import json
-print(json.dumps(json_output, indent=2))
+# Output the extracted CSS code
+print(result.split("{")[1].split("}")[0])
