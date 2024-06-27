@@ -1,42 +1,31 @@
-/* Sınıf 1: .container */
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Sınıf 2: .header */
-.header {
-    background-color: #f8f9fa;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Sınıf 3: .main-content */
-.main-content {
-    padding: 20px;
-    background-color: #fff;
-}
-
-/* Sınıf 4: .footer */
-.footer {
-    background-color: #f1f1f1;
-    padding: 15px 0;
-    text-align: center;
-    border-top: 1px solid #ddd;
-}
-
-/* Sınıf 5: .button */
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
+.standart-class {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    border: 2px solid blue; /* added for visualization */
+    transition: margin 1s ease;
+  }
+  
+  .standart-class:hover {
+    margin: 0.5cm;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    border: 2px solid red; /* added for visualization */
+  }
+  
+  .standart-class .button {
+    background-color: #0066cc;
     color: #fff;
-    text-decoration: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
     border-radius: 5px;
-}
-
-.button:hover {
-    background-color: #0056b3;
-}
+    transition: background-color 1s ease;
+  }
+  
+  .standart-class .button:hover {
+    background-color: #859bb3;
+  }

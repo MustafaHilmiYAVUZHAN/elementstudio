@@ -1,52 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Şık CSS Örneği</title>
-<style>
-  /* CSS kodları buraya */
-  .custom-class {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: background-color 0.3s, box-shadow 0.3s;
-  }
-
-  .custom-class:hover {
-    background-color: #e0e0e0;
-  }
-
-  .custom-class:focus {
-    outline: none;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .custom-class.button {
-    border: none;
-    color: white;
-    background-color: #007bff;
-    cursor: pointer;
-  }
-
-  .custom-class.button:hover {
-    background-color: #0056b3;
-  }
-
-  .custom-class.button:focus {
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Specificity Example</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<button id="button" class="custom-class button">Button</button>
-<div id="div" class="custom-class">Div Element</div>
-
+    <div class="standart-class">
+        <button class="button">Button 1</button>
+        <button class="button">Button 2</button>
+    </div>
 </body>
 </html>

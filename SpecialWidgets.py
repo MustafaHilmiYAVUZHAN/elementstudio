@@ -162,20 +162,29 @@ class DynamicTable:
 
                 for index, item in enumerate(content):
                     if isinstance(item[1], list):
+                        if special_variable!=None:
+                            if len(special_variable.split(" "))==len(content):
+                                special_variable_for_item=special_variable.split(" ")[index]
+                            elif len(special_variable.split(" "))!=len(content) and len(special_variable.split(" "))!=0:
+                                print("aa")
+                                special_variable_for_item=special_variable
+                            else:
+                                special_variable_for_item=special_variable
+
                         if len(item[1]) ==2 and isinstance(item[1][1], list):
                             label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
                             label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                             entry = customtkinter.CTkEntry(self.mainFrame,width=80)
                             entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
                             if special_variable:
-                                entry.insert(0, VP.get_number(special_variable))
+                                entry.insert(0, VP.get_number(special_variable_for_item))
                             else:
                                 entry.insert(0,item[1][0])
 
                             combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1][1], width=70)
                             combobox.grid(row=len(self.mainFrame.grid_slaves()) - 2, column=2, padx=5, pady=5, sticky='w')
                             if special_variable:
-                                combobox.set(VP.get_unit(special_variable))
+                                combobox.set(VP.get_unit(special_variable_for_item))
                             else:
                                 pass
                             inner_widgets[label_text] = (label, entry, combobox)
@@ -186,7 +195,7 @@ class DynamicTable:
                             combobox = customtkinter.CTkComboBox(self.mainFrame, values=item[1],width=160)
                             combobox.grid(row=len(self.mainFrame.grid_slaves())-1, column=1,columnspan=2, padx=5, pady=2, sticky='w')
                             if special_variable:
-                                combobox.set(special_variable)
+                                combobox.set(special_variable_for_item)
                             else:
                                 pass
                             inner_widgets[item[0]] = (sub_label, combobox)
@@ -197,7 +206,8 @@ class DynamicTable:
                         entry.grid(row=len(self.mainFrame.grid_slaves())-1, column=1, columnspan=2, padx=5, pady=2, sticky='w')
                         
                         if special_variable:
-                            entry.insert(0, special_variable)
+                            print(special_variable)
+                            entry.insert(0, special_variable_for_item)
                         else:
                             entry.insert(0, item[1])
                         inner_widgets[item[0]] = (sub_label, entry)

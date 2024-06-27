@@ -12,6 +12,7 @@ from Property import CssPropertyManager as cssPM
 from WebCodeCreater import CSS
 import ctypes
 import pywinstyles
+from json import dumps
 class ProjectApplication:
     def __init__(self, root):
         self.root = root
@@ -115,15 +116,60 @@ class ProjectApplication:
         self.id_optionmenu.update()
     def update_sub_class_chooser(self,class_):
         self.list_sub_class_chooser=CSS.group_by_first_word(CSS.list_css_classes("styles.css"))[class_]
+        if 1:
+            if len(CSS.find_pseude_class(self.class_values,class_))>1:
+
+                self.pseudo_classes=CSS.find_pseude_class(self.class_values,class_)
+                print(self.pseudo_classes)
+                self.pseudo_classes[self.pseudo_classes.index("")]=":normal"
+                self.pseudo_class_chooser.configure(values=self.pseudo_classes)
+                self.pseudo_class_chooser.update()
+            else:
+                self.pseudo_classes=[":normal"]
+                self.pseudo_class_chooser.configure(values=self.pseudo_classes)
+                self.pseudo_class_chooser.set(":normal")
+                self.pseudo_class_chooser.update()
         self.list_sub_class_chooser[0]="Base"
         self.sub_class_chooser.configure(values=CSS.no_pseudo_class(self.list_sub_class_chooser))
         self.sub_class_chooser.set(self.list_sub_class_chooser[0])
+
+
     def update_pseudo_class_chooser(self,sub_class):
         
         self.pseudo_classes=CSS.find_pseude_class(self.list_sub_class_chooser,sub_class)
-        self.pseudo_classes[0]=":normal"
+        self.pseudo_classes[self.pseudo_classes.index("")]=":normal"
         self.pseudo_class_chooser.configure(values=self.pseudo_classes)
         self.pseudo_class_chooser.set(self.pseudo_classes[0])
+        if sub_class=="Base":
+            self.update_sub_class_chooser(self.class_chooser.get())
+
+    def update_class_tab(self,dict_=None):
+        if isinstance(dict_,str):
+            self.class_system()
+            print("hi")
+        else:
+            try:
+                self.table_for_class.mainFrame.destroy()
+            except:
+                pass
+            self.table_for_class=DT(self.Class_shower,dict_)
+            cssPM.add_css_property(self.table_for_class)
+            self.table_for_class.mainFrame.grid(row=3,column=0,columnspan=2,sticky="nsew")
+            
+
+    def class_system(self,useless=None):
+        class_=self.class_chooser.get()
+        sub_class=self.sub_class_chooser.get()
+        if sub_class=="Base":
+            sub_class=""
+        pseudo_class=self.pseudo_class_chooser.get()
+        if pseudo_class==":normal":
+            pseudo_class=""
+        css=CSS.css_to_json("styles.css")
+        css_code=CSS.return_css(css,class_,sub_class,pseudo_class)
+        print(dumps(css_code,indent=2))
+        print(type(css_code))
+        self.update_class_tab(dict_=css_code)
     def open_new_window(self, project_directory=None,type="ClassShower"):
         if type=="ClassShower":
             self.Class_shower =tk.CTkToplevel()
@@ -132,21 +178,23 @@ class ProjectApplication:
             self.root.withdraw()
             self.Class_shower.protocol("WM_DELETE_WINDOW", self.Class_shower.destroy)
             self.Class_shower.title("Classes")
+            self.Class_shower.geometry("300x500")
             self.Class_shower.resizable(0, 0)
             pywinstyles.apply_style(self.Class_shower,"acrylic")
-            self.class_values = CSS.filter_class(CSS.list_main(CSS.list_css_classes("styles.css")))
-            self.class_chooser=tk.CTkOptionMenu(self.Class_shower,values=self.class_values,command=self.update_sub_class_chooser)
-            self.class_chooser.grid(row=0,column=0)
+            self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("styles.css")))
+            self.class_chooser=tk.CTkOptionMenu(self.Class_shower,values= CSS.no_pseudo_class(self.class_values),command=self.update_sub_class_chooser)
+            self.class_chooser.grid(row=0,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
             self.sub_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""],command=self.update_pseudo_class_chooser)
-            self.sub_class_chooser.grid(row=1,column=0)
-            self.pseudo_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""])
-            self.pseudo_class_chooser.grid(row=2,column=0)
-            self.table_for_class=DT(self.Class_shower)
-            cssPM.add_css_property(self.table_for_class)
-            
-            self.table_for_class.mainFrame.grid(row=3,column=0)
+            self.sub_class_chooser.grid(row=1,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
+            self.pseudo_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""])#,command=self.update_class_tab
+            self.pseudo_class_chooser.grid(row=2,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
+            self.update_table_button=tk.CTkButton(self.Class_shower,text="Get Class",command=self.class_system)
+            self.update_table_button.grid(row=4,column=0,pady=5,padx=5,sticky="nsew")
             self.update_sub_class_chooser(self.class_chooser.get())
             self.update_pseudo_class_chooser(self.sub_class_chooser.get())
+            self.update_sub_class_chooser(self.class_chooser.get())
+            self.save_table_button=tk.CTkButton(self.Class_shower,text="Save Class")
+            self.save_table_button.grid(row=4,column=1,pady=5,padx=5,sticky="nsew")
         if self.check_project_content(project_directory) and type=="NewProjectWindow":  
             self.root = root
 

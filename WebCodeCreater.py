@@ -3,6 +3,13 @@ from bs4 import BeautifulSoup
 import re
 class CSS:
     @staticmethod
+    def dict_difference_get_2(dict1, dict2):
+        diff = {}
+        for key in dict1.keys() | dict2.keys():
+            if dict1.get(key) != dict2.get(key):
+                diff[key] =  dict2.get(key)
+        return diff
+    @staticmethod
     def select_sub_class(css,start_selector,readinfile=True):
         soup = BeautifulSoup(css_code, 'html.parser')
 
@@ -66,15 +73,13 @@ class CSS:
     def stringtodict(class_css=None):
         if class_css:
 
-            print(class_css)
             class_css=class_css.replace(";",":")
             class_css=class_css.replace("\n","")            
             
 
-            print(CSS.listtodict( class_css.split(":")[:-1]))
             
             class_dict= CSS.listtodict( [eleman.strip() for eleman in class_css.split(":")[:-1]])
-            print(str(class_dict))
+
         else:
             class_dict={}
         return class_dict
@@ -104,6 +109,12 @@ class CSS:
     @staticmethod
     def list_main(item):
         return list(set([item.split()[0] for item in item]))
+    @staticmethod
+    def return_css(css,class_,sub_class,pseudo_class):
+        if sub_class=="":
+            return CSS.css_up_class_equal(css[class_],css[class_+pseudo_class])
+        else:
+            return CSS.css_up_class_equal(CSS.css_up_class_equal(css[class_],css[class_+" "+sub_class]),css[class_+" "+sub_class+pseudo_class])
     @staticmethod
     def group_by_first_word(items):
         # Dictionary to hold groups
@@ -167,6 +178,11 @@ class CSS:
         except FileNotFoundError:
             print(f"Error: The file '{filename}' was not found.")
             return None
+    def css_up_class_equal(base_dict,add_dict):
+        for key, value in add_dict.items():
+            base_dict[key] = value
+
+        return base_dict
     @staticmethod
     def dict_to_css(style_dict,class_=None):
         if class_:
@@ -310,8 +326,9 @@ if __name__ == "__main__":
 .standart-class .body {
   background-color: #f5f5f5;
   color: #333;
+  padding: 1;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 12.6;
 }
 
 .standart-class .h1 {
@@ -405,7 +422,10 @@ if __name__ == "__main__":
     # JSON çıktısını yazdır
     import json
     print(json.dumps(json_output, indent=2))
-    print(json_output[list(json_output.keys())[0]])
+    data=dict(json_output[list(json_output.keys())[1]])
+    
+    print(json_output[list(json_output.keys())[1]])
+    print(CSS.css_up_class_equal(json_output[list(json_output.keys())[1]],json_output[list(json_output.keys())[2]]))
     print(CSS.list_main(CSS.list_css_classes("styles.css")))
     print("mmmmmmmmmmmmmm")
     print(CSS.list_css_classes("styles.css"))
