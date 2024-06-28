@@ -3,9 +3,16 @@ from bs4 import BeautifulSoup
 import re
 class CSS:
     @staticmethod
-    def dict_difference_get_2(dict1, dict2):
+    def dict_difference_get_2_union(dict1, dict2):
         diff = {}
         for key in dict1.keys() | dict2.keys():
+            if dict1.get(key) != dict2.get(key):
+                diff[key] =  dict2.get(key)
+        return diff
+    @staticmethod
+    def dict_difference_get_2_intersection(dict1, dict2):
+        diff = {}
+        for key in dict1.keys() & dict2.keys():
             if dict1.get(key) != dict2.get(key):
                 diff[key] =  dict2.get(key)
         return diff
@@ -198,7 +205,7 @@ class CSS:
                 css = css.rstrip() + ";\n"
             else:
                 css += f"{key}: {value};\n"
-        print(css.rstrip())
+        #print(css.rstrip())
         return css.rstrip()
     @staticmethod
     def filter_class(liste):

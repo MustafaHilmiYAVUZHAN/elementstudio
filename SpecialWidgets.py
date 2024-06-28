@@ -161,19 +161,22 @@ class DynamicTable:
                 inner_widgets[label_text] = frame_label
 
                 for index, item in enumerate(content):
+                    if special_variable!=None:
+                        if len(special_variable.split(" "))==len(content):
+                            special_variable_for_item=special_variable.split(" ")[index]
+                        elif len(special_variable.split(" "))!=len(content) and len(special_variable.split(" "))!=1:
+                            print(item[0]+":"+special_variable)
+                            special_variable_for_item=special_variable
+                        else:
+                            special_variable_for_item=special_variable
+                    else:
+                        special_variable_for_item=special_variable
                     if isinstance(item[1], list):
-                        if special_variable!=None:
-                            if len(special_variable.split(" "))==len(content):
-                                special_variable_for_item=special_variable.split(" ")[index]
-                            elif len(special_variable.split(" "))!=len(content) and len(special_variable.split(" "))!=0:
-                                print("aa")
-                                special_variable_for_item=special_variable
-                            else:
-                                special_variable_for_item=special_variable
+                        
 
                         if len(item[1]) ==2 and isinstance(item[1][1], list):
-                            label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
-                            label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
+                            sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
+                            sub_label.grid(row=len(self.mainFrame.grid_slaves()), column=0, padx=10, pady=5, sticky='w')
                             entry = customtkinter.CTkEntry(self.mainFrame,width=80)
                             entry.grid(row=len(self.mainFrame.grid_slaves()) - 1, column=1, padx=5, pady=5, sticky='w')
                             if special_variable:
@@ -187,7 +190,8 @@ class DynamicTable:
                                 combobox.set(VP.get_unit(special_variable_for_item))
                             else:
                                 pass
-                            inner_widgets[label_text] = (label, entry, combobox)
+                            print
+                            inner_widgets[item[0]] = (sub_label, entry, combobox)
                         else:
                             
                             sub_label = customtkinter.CTkLabel(self.mainFrame, text="◆ "+item[0])
@@ -205,7 +209,7 @@ class DynamicTable:
                         entry = customtkinter.CTkEntry(self.mainFrame,width=160)
                         entry.grid(row=len(self.mainFrame.grid_slaves())-1, column=1, columnspan=2, padx=5, pady=2, sticky='w')
                         
-                        if special_variable:
+                        if special_variable!=None:
                             print(special_variable)
                             entry.insert(0, special_variable_for_item)
                         else:
@@ -333,8 +337,8 @@ if __name__ == "__main__":
     root.geometry("400x800")
     root.columnconfigure(0, weight=1)
 
-    table = DT(root)
-    table.add_row("Name", "Fatma")
+    table = DynamicTable(root)
+    """table.add_row("Name", "Fatma")
     table.add_row("Birth Date", [["Day", "5"], ["Month", ["March", "April"]], ["Year", "1988"]])
     table.add_row("Height", ["160",["cm","inch"]])
     table.add_row("Weight",  ["60",["kg","lb"]])
@@ -345,8 +349,9 @@ if __name__ == "__main__":
     table.add_row("Hobbies", ["Reading", "Hiking", "Cooking"])
     table.add_row("Education", [["Degree", "Doctor of Medicine"], ["University", ["Ankara University Medical School",["mezun","student"]]]])
     table.add_row("Favorite Food", ["Kebab", "Sushi", "Salad"])
-    table.add_row("Music Genre", ["Classical", "Jazz", "Pop"])
-    table.add_row("Years of Experience", "10")
+    table.add_row("Music Genre", ["Classical", "Jazz", "Pop"])"""
+    table.add_row("margin", [["margin-top", ["0",["px","%","em","rem","cm"]]], ["margin-right", ["1",["px","%","em","rem","cm"]]], ["margin-bottom", ["2",["px","%","em","rem","cm"]]], ["margin-left", ["3",["px","%","em","rem","cm"]]]] )
+    """table.add_row("Years of Experience", "10")"""
     table.mainFrame.place(relx=0.05, rely=0.05, relheight=0.9, relwidth=0.9)
     # "Education" başlığı altındaki verileri almak için örnek kullanım
     """education_data = table.get_widget("Education")

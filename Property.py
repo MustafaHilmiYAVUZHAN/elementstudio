@@ -7,7 +7,7 @@ class CssPropertyManager:
         table.add_row("color", ["black","#000","white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","red","hsl(0, 100%, 50%)","green","hsl(120, 100%, 50%)","blue","hsl(240, 100%, 50%)"] )
         table.add_row("background-color", ["transparent","initial","white","#FFFFFF","rgb(255, 255, 255)","hsl(0, 0%, 100%)","black","#000"] )
         table.add_row("font-family", ["Arial", "Times New Roman"] )
-        table.add_row("font-size", ["10",["px","%","em","rem","cm"]] )
+        table.add_row("font-size", ["16",["px","%","em","rem","cm"]] )
         table.add_row("font-weight", [
             "normal",
             "bold",
@@ -29,11 +29,11 @@ class CssPropertyManager:
             "center",
             "justify"
         ] )
-        table.add_row("margin", [["margin-top", ["10",["px","%","em","rem","cm"]]], ["margin-right", ["10",["px","%","em","rem","cm"]]], ["margin-bottom", ["10",["px","%","em","rem","cm"]]], ["margin-left", ["10",["px","%","em","rem","cm"]]]] )
-        table.add_row("padding", [["padding-top", ["10",["px","%","em","rem","cm"]]], ["padding-right", ["10",["px","%","em","rem","cm"]]], ["padding-bottom", ["10",["px","%","em","rem","cm"]]], ["padding-left", ["10",["px","%","em","rem","cm"]]]] )
-        table.add_row("border", [["thickness","1px"],["style",["solid","double","groove","ridge","inset","outset"]],["color",["black","white"]]] )
-        table.add_row("width",  ["10",["px","%","em","rem","cm","initial"]] )
-        table.add_row("height",  ["10",["px","%","em","rem","cm","auto"]] )
+        table.add_row("margin", [["margin-top", ["0",["px","%","em","rem","cm"]]], ["margin-right", ["0",["px","%","em","rem","cm"]]], ["margin-bottom", ["0",["px","%","em","rem","cm"]]], ["margin-left", ["0",["px","%","em","rem","cm"]]]] )
+        table.add_row("padding", [["padding-top", ["0",["px","%","em","rem","cm"]]], ["padding-right", ["0",["px","%","em","rem","cm"]]], ["padding-bottom", ["0",["px","%","em","rem","cm"]]], ["padding-left", ["0",["px","%","em","rem","cm"]]]] )
+        table.add_row("border", [["thickness","none"],["style",["","solid","double","groove","ridge","inset","outset"]],["color",["","black","white"]]] )
+        table.add_row("width",  ["",["auto","px","%","em","rem","cm","initial"]] )
+        table.add_row("height",  ["",["auto","px","%","em","rem","cm","auto"]] )
         table.add_row("min-width",  ["",["none","px","%","em","rem","cm"]] )
         table.add_row("min-height",  ["",["none","px","%","em","rem","cm"]] )
         table.add_row("max-width",  ["",["none","px","%","em","rem","cm"]] )
@@ -59,8 +59,8 @@ class CssPropertyManager:
         ] )
         
         table.add_row("list-style-type", [
-            "none",
             "disc",
+            "none",
             "circle",
             "square",
             "decimal",
@@ -91,6 +91,7 @@ class CssPropertyManager:
             "50"
         ] )
         table.add_row("flex",[["flex-grow", [
+            "0",
             "1",
             "2",
             "3",
@@ -160,9 +161,9 @@ class CssPropertyManager:
         ] )
         
         table.add_row("float", [
-            "left",
+            "none",
             "right",
-            "none"
+            "left"
         ] )
         
         table.add_row("clear", [
@@ -181,7 +182,7 @@ class CssPropertyManager:
         
         
         table.add_row("opacity", [
-            "1.0",
+            "1",
             "0.75",
             "0.5",
             "0.25",
@@ -202,8 +203,8 @@ class CssPropertyManager:
         ] )
         
         table.add_row("border-width", ["",[
-            "thin",
             "medium",
+            "thin",
             "thick",
             "px",
             "%",
@@ -225,12 +226,12 @@ class CssPropertyManager:
         
         
         
-        table.add_row("height", [
+        """table.add_row("height", [
             "auto",
             "value",
             "initial",
             "inherit"
-        ] )
+        ] )"""
 
         
 
@@ -248,12 +249,13 @@ class CssPropertyManager:
         
         
         table.add_row("align-content", [
+            "stretch",
             "center",
             "flex-start",
             "flex-end",
             "space-between",
-            "space-around",
-            "stretch"
+            "space-around"
+            
         ] )
         
         table.add_row("align-items", [
@@ -296,6 +298,7 @@ class CssPropertyManager:
         ] )
         
         table.add_row("order", [
+            "0",
             "1",
             "2",
             "3",

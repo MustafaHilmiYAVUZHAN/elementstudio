@@ -114,6 +114,31 @@ class ProjectApplication:
         except:
             self.id_optionmenu.set("")
         self.id_optionmenu.update()
+    def save_class_button(self):
+        print("debug")
+        code=CSS.css_to_json(".class{\n"+str(CSS.dict_to_css(self.table_for_class.all_data_in_wigdet()))+"\n}",readinfile=0)
+        code=code[list(code.keys())[0]]
+        table_useless=DT(self.Class_shower)
+        cssPM.add_css_property(table_useless)
+        useless_data=CSS.css_to_json(".class{\n"+str(CSS.dict_to_css(table_useless.all_data_in_wigdet()))+"\n}",readinfile=0)
+        
+        useless_data=useless_data[list(useless_data.keys())[0]]
+        print("useless:")
+        print(table_useless.all_data_in_wigdet())
+        """print(CSS.dict_to_css(useless_data))"""
+        difference_code=CSS.dict_difference_get_2_intersection(useless_data,code)
+        print("difference_code.....................................................................")
+        print(CSS.dict_to_css(difference_code))
+        difference_code=CSS.dict_difference_get_2_union(difference_code,self.css_code)
+        print("difference_code2.....................................................................")
+        print(difference_code)
+        print("code.....................................................................")
+        print(code)
+        print("useless_data.....................................................................")
+        print(useless_data)
+        print("self.css_code.....................................................................")
+        print(self.css_code)
+        
     def update_sub_class_chooser(self,class_):
         self.list_sub_class_chooser=CSS.group_by_first_word(CSS.list_css_classes("styles.css"))[class_]
         if 1:
@@ -167,6 +192,7 @@ class ProjectApplication:
             pseudo_class=""
         css=CSS.css_to_json("styles.css")
         css_code=CSS.return_css(css,class_,sub_class,pseudo_class)
+        self.css_code=css_code
         print(dumps(css_code,indent=2))
         print(type(css_code))
         self.update_class_tab(dict_=css_code)
@@ -193,7 +219,7 @@ class ProjectApplication:
             self.update_sub_class_chooser(self.class_chooser.get())
             self.update_pseudo_class_chooser(self.sub_class_chooser.get())
             self.update_sub_class_chooser(self.class_chooser.get())
-            self.save_table_button=tk.CTkButton(self.Class_shower,text="Save Class")
+            self.save_table_button=tk.CTkButton(self.Class_shower,text="Save Class",command=self.save_class_button)
             self.save_table_button.grid(row=4,column=1,pady=5,padx=5,sticky="nsew")
         if self.check_project_content(project_directory) and type=="NewProjectWindow":  
             self.root = root
