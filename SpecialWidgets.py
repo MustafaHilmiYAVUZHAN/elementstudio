@@ -2,12 +2,41 @@ import customtkinter as tk
 import customtkinter
 import pywinstyles
 from DatabaseManager import ValueParser as VP
+class OptionmenuDiolog:
+    def __init__(self,title,label,list_,ok_button_text="Ok",cancel_button_text="Cancel"):
+        "yvzhn"
+        self.root = tk.CTkToplevel()
+        self.root.title(title)
+        tk.set_appearance_mode("System")
+        
+        self.label = tk.CTkLabel(self.root, text=label)
+        self.label.pack(pady=10)
+        self.root.wm_attributes("-topmost", True)
+        tk.set_default_color_theme("extreme.json")
+        pywinstyles.apply_style(self.root,"acrylic")
+        self.optionmenu_list=tk.CTkOptionMenu(self.root,values=list_)
+        self.optionmenu_list.pack()
+        self.ok_button = tk.CTkButton(self.root, text=ok_button_text, command=self.on_ok_click)
+        self.ok_button.pack(side=tk.LEFT, padx=10)
 
+        self.cancel_button = tk.CTkButton(self.root, text=cancel_button_text, command=self.on_cancel_click)
+        self.cancel_button.pack(side=tk.RIGHT, padx=10)
+
+        self.result = None
+    def on_ok_click(self):
+        self.result = self.optionmenu_list.get()
+        self.root.destroy()
+    def on_cancel_click(self):
+        self.result = 0
+        self.root.destroy()
+    def GetResult(self):
+        return self.result
 class InputDiolog:
     def __init__(self,title,text):
-        project_name = tk.CTkInputDialog(title=title, text=text)
-        pywinstyles.apply_style(project_name,"acrylic")
-        return project_name
+        self.data = tk.CTkInputDialog(title=title, text=text)
+        pywinstyles.apply_style(self.data,"acrylic")
+    def DataReturn(self):
+        return self.data.get_input()
 class YesNoDiolog:
     def __init__(self, title,label, yes_func=None, no_func=None):
         self.root = tk.CTkToplevel()

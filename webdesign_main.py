@@ -8,6 +8,7 @@ from SpecialWidgets import DynamicTable as DT
 from SpecialWidgets import AdjustableEntry as AE
 from SpecialWidgets import AdjustableComboBox as AC
 from SpecialWidgets import YesNoDiolog as YND
+from SpecialWidgets import InputDiolog
 from Property import CssPropertyManager as cssPM
 from WebCodeCreater import CSS
 import ctypes
@@ -118,23 +119,25 @@ class ProjectApplication:
         print("debug")
         code=CSS.css_to_json(".class{\n"+str(CSS.dict_to_css(self.table_for_class.all_data_in_wigdet()))+"\n}",readinfile=0)
         code=code[list(code.keys())[0]]
-        table_useless=DT(self.Class_shower)
-        cssPM.add_css_property(table_useless)
-        useless_data=CSS.css_to_json(".class{\n"+str(CSS.dict_to_css(table_useless.all_data_in_wigdet()))+"\n}",readinfile=0)
-        
-        useless_data=useless_data[list(useless_data.keys())[0]]
+        if "self.useless_data" not in locals():
+
+            table_useless=DT(self.Class_shower)
+            cssPM.add_css_property(table_useless)
+            self.useless_data=CSS.css_to_json(".class{\n"+str(CSS.dict_to_css(table_useless.all_data_in_wigdet()))+"\n}",readinfile=0)
+            
+            self.useless_data=self.useless_data[list(self.useless_data.keys())[0]]
         print("useless:")
         print(table_useless.all_data_in_wigdet())
         print(self.css_code_class)
         
         
-        difference_code=CSS.dict_difference_get_2_intersection(useless_data,code)
+        difference_code=CSS.dict_difference_get_2_intersection(self.useless_data,code)
         print("difference_code.....................................................................")
         self.css_code[self.css_key]=CSS.css_up_class_equal(self.css_code_class,difference_code)
         css_code_final=CSS.json_to_css(self.css_code)
         print(css_code_final)
         CSS.save_to_file("classStyles.css",css_code_final)
-        """print(CSS.dict_to_css(useless_data))
+        """print(CSS.dict_to_css(self.useless_data))
         print("difference_code.....................................................................")
         print(CSS.dict_to_css(difference_code))
         difference_code=CSS.dict_difference_get_2_union(difference_code,self.css_code_class)
@@ -142,8 +145,8 @@ class ProjectApplication:
         print(difference_code)
         print("code.....................................................................")
         print(code)
-        print("useless_data.....................................................................")
-        print(useless_data)
+        print("self.useless_data.....................................................................")
+        print(self.useless_data)
         print("self.css_code_class.....................................................................")
         """
         
@@ -196,7 +199,21 @@ class ProjectApplication:
             self.table_for_class.mainFrame.grid_forget()
         except:
             pass    
-
+    def delete_class(self):
+        print(self.css_code)
+        del self.css_code[".special-class"]
+        self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
+        self.class_chooser.configure(values=CSS.no_pseudo_class(self.class_values))
+        self.class_chooser.set(CSS.no_pseudo_class(self.class_values)[0])
+        self.class_chooser.update()
+        print(self.css_code)
+    def create_class(self):
+        new_class_name_diolog=InputDiolog("Create Class","What is your new class name:")
+        new_class_name="."+new_class_name_diolog.DataReturn()
+        if new_class_name in self.class_values:
+            messagebox.showerror(title="Invalid name",message="This class name already exists")
+        else:
+            messagebox.showerror(title="hello",message="iiii")
     def class_system(self,useless=None):
         class_=self.class_chooser.get()
         sub_class=self.sub_class_chooser.get()
@@ -205,7 +222,7 @@ class ProjectApplication:
         pseudo_class=self.pseudo_class_chooser.get()
         if pseudo_class==":normal":
             pseudo_class=""
-        self.css_code=CSS.css_to_json("classStyles.css")
+        
         css_code_class,self.css_key=CSS.return_css(self.css_code,class_,sub_class,pseudo_class)
         self.css_code_class=css_code_class
         print(dumps(css_code_class,indent=2))
@@ -236,8 +253,11 @@ class ProjectApplication:
             self.update_sub_class_chooser(self.class_chooser.get())
             self.save_table_button=tk.CTkButton(self.Class_shower,text="Save Class",command=self.save_class_button)
             self.save_table_button.grid(row=4,column=1,pady=5,padx=5,sticky="nsew")
-            self.new_class_button=tk.CTkButton(self.Class_shower,text="Create new class",width=340)
+            self.new_class_button=tk.CTkButton(self.Class_shower,text="Create new class",width=340,command=self.create_class)
             self.new_class_button.grid(row=5,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
+            self.delete_class_button=tk.CTkButton(self.Class_shower,text="Delete class",command=self.delete_class)
+            self.delete_class_button.grid(row=6,column=0,pady=5,padx=5,sticky="nsew")
+            self.css_code=CSS.css_to_json("classStyles.css")
         if self.check_project_content(project_directory) and type=="NewProjectWindow":  
             self.root = root
 

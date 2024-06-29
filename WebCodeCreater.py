@@ -21,6 +21,10 @@ class CSS:
                 diff[key] =  dict2.get(key)
         return diff
     @staticmethod
+    def append_to_file(file_path, text):
+        with open(file_path, 'a') as file:
+            file.write('\n'+text + '\n')
+    @staticmethod
     def select_sub_class(css,start_selector,readinfile=True):
         soup = BeautifulSoup(css_code, 'html.parser')
 

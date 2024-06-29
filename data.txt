@@ -1,3 +1,4 @@
+electronstudio - C:/Users/Musta/OneDrive/Masaüstü/electronstudio
 src - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sd/src
 zcxz - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/zcxz
 dededdd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/dededdd
@@ -12,4 +13,3 @@ deneme1 - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme1
 deneme - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme
 hello - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/hello
 newtree - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/newtree
-deneme2 - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/deneme2
