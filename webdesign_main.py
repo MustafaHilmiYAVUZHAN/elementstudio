@@ -125,22 +125,30 @@ class ProjectApplication:
         useless_data=useless_data[list(useless_data.keys())[0]]
         print("useless:")
         print(table_useless.all_data_in_wigdet())
-        """print(CSS.dict_to_css(useless_data))"""
+        print(self.css_code_class)
+        
+        
         difference_code=CSS.dict_difference_get_2_intersection(useless_data,code)
         print("difference_code.....................................................................")
+        self.css_code[self.css_key]=CSS.css_up_class_equal(self.css_code_class,difference_code)
+        css_code_final=CSS.json_to_css(self.css_code)
+        print(css_code_final)
+        CSS.save_to_file("classStyles.css",css_code_final)
+        """print(CSS.dict_to_css(useless_data))
+        print("difference_code.....................................................................")
         print(CSS.dict_to_css(difference_code))
-        difference_code=CSS.dict_difference_get_2_union(difference_code,self.css_code)
+        difference_code=CSS.dict_difference_get_2_union(difference_code,self.css_code_class)
         print("difference_code2.....................................................................")
         print(difference_code)
         print("code.....................................................................")
         print(code)
         print("useless_data.....................................................................")
         print(useless_data)
-        print("self.css_code.....................................................................")
-        print(self.css_code)
+        print("self.css_code_class.....................................................................")
+        """
         
     def update_sub_class_chooser(self,class_):
-        self.list_sub_class_chooser=CSS.group_by_first_word(CSS.list_css_classes("styles.css"))[class_]
+        self.list_sub_class_chooser=CSS.group_by_first_word(CSS.list_css_classes("classStyles.css"))[class_]
         if 1:
             if len(CSS.find_pseude_class(self.class_values,class_))>1:
 
@@ -157,7 +165,7 @@ class ProjectApplication:
         self.list_sub_class_chooser[0]="Base"
         self.sub_class_chooser.configure(values=CSS.no_pseudo_class(self.list_sub_class_chooser))
         self.sub_class_chooser.set(self.list_sub_class_chooser[0])
-
+        self.destroy_class_frame()
 
     def update_pseudo_class_chooser(self,sub_class):
         
@@ -167,6 +175,7 @@ class ProjectApplication:
         self.pseudo_class_chooser.set(self.pseudo_classes[0])
         if sub_class=="Base":
             self.update_sub_class_chooser(self.class_chooser.get())
+        self.destroy_class_frame()
 
     def update_class_tab(self,dict_=None):
         if isinstance(dict_,str):
@@ -175,12 +184,18 @@ class ProjectApplication:
         else:
             try:
                 self.table_for_class.mainFrame.destroy()
+
             except:
-                pass
+                pass 
             self.table_for_class=DT(self.Class_shower,dict_)
             cssPM.add_css_property(self.table_for_class)
             self.table_for_class.mainFrame.grid(row=3,column=0,columnspan=2,sticky="nsew")
-            
+    def destroy_class_frame(self,useless=None):
+        try:
+            self.table_for_class.mainFrame.destroy()
+            self.table_for_class.mainFrame.grid_forget()
+        except:
+            pass    
 
     def class_system(self,useless=None):
         class_=self.class_chooser.get()
@@ -190,12 +205,12 @@ class ProjectApplication:
         pseudo_class=self.pseudo_class_chooser.get()
         if pseudo_class==":normal":
             pseudo_class=""
-        css=CSS.css_to_json("styles.css")
-        css_code=CSS.return_css(css,class_,sub_class,pseudo_class)
-        self.css_code=css_code
-        print(dumps(css_code,indent=2))
-        print(type(css_code))
-        self.update_class_tab(dict_=css_code)
+        self.css_code=CSS.css_to_json("classStyles.css")
+        css_code_class,self.css_key=CSS.return_css(self.css_code,class_,sub_class,pseudo_class)
+        self.css_code_class=css_code_class
+        print(dumps(css_code_class,indent=2))
+        print(type(css_code_class))
+        self.update_class_tab(dict_=css_code_class)
     def open_new_window(self, project_directory=None,type="ClassShower"):
         if type=="ClassShower":
             self.Class_shower =tk.CTkToplevel()
@@ -204,15 +219,15 @@ class ProjectApplication:
             self.root.withdraw()
             self.Class_shower.protocol("WM_DELETE_WINDOW", self.Class_shower.destroy)
             self.Class_shower.title("Classes")
-            self.Class_shower.geometry("300x500")
-            self.Class_shower.resizable(0, 0)
+            self.Class_shower.geometry("350x600")
+            self.Class_shower.resizable(1, 1)
             pywinstyles.apply_style(self.Class_shower,"acrylic")
-            self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("styles.css")))
-            self.class_chooser=tk.CTkOptionMenu(self.Class_shower,values= CSS.no_pseudo_class(self.class_values),command=self.update_sub_class_chooser)
+            self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
+            self.class_chooser=tk.CTkOptionMenu(self.Class_shower,values= CSS.no_pseudo_class(self.class_values),command=self.update_sub_class_chooser,width=340)
             self.class_chooser.grid(row=0,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
             self.sub_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""],command=self.update_pseudo_class_chooser)
             self.sub_class_chooser.grid(row=1,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
-            self.pseudo_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""])#,command=self.update_class_tab
+            self.pseudo_class_chooser=tk.CTkOptionMenu(self.Class_shower,values=[""],command=self.destroy_class_frame)#,command=self.update_class_tab
             self.pseudo_class_chooser.grid(row=2,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
             self.update_table_button=tk.CTkButton(self.Class_shower,text="Get Class",command=self.class_system)
             self.update_table_button.grid(row=4,column=0,pady=5,padx=5,sticky="nsew")
@@ -221,6 +236,8 @@ class ProjectApplication:
             self.update_sub_class_chooser(self.class_chooser.get())
             self.save_table_button=tk.CTkButton(self.Class_shower,text="Save Class",command=self.save_class_button)
             self.save_table_button.grid(row=4,column=1,pady=5,padx=5,sticky="nsew")
+            self.new_class_button=tk.CTkButton(self.Class_shower,text="Create new class",width=340)
+            self.new_class_button.grid(row=5,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
         if self.check_project_content(project_directory) and type=="NewProjectWindow":  
             self.root = root
 

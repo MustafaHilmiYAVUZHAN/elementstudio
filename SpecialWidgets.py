@@ -3,7 +3,11 @@ import customtkinter
 import pywinstyles
 from DatabaseManager import ValueParser as VP
 
-        
+class InputDiolog:
+    def __init__(self,title,text):
+        project_name = tk.CTkInputDialog(title=title, text=text)
+        pywinstyles.apply_style(project_name,"acrylic")
+        return project_name
 class YesNoDiolog:
     def __init__(self, title,label, yes_func=None, no_func=None):
         self.root = tk.CTkToplevel()

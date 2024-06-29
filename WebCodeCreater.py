@@ -10,6 +10,10 @@ class CSS:
                 diff[key] =  dict2.get(key)
         return diff
     @staticmethod
+    def save_to_file(filename, content):
+        with open(filename, 'w', encoding='utf-8') as file:
+            file.write(content)
+    @staticmethod
     def dict_difference_get_2_intersection(dict1, dict2):
         diff = {}
         for key in dict1.keys() & dict2.keys():
@@ -117,11 +121,17 @@ class CSS:
     def list_main(item):
         return list(set([item.split()[0] for item in item]))
     @staticmethod
+    def json_to_css(json):
+        css=""
+        for key in list(json.keys()):
+            css+=key+" {\n"+CSS.dict_to_css(json[key])+"\n}\n"
+        return css 
+    @staticmethod
     def return_css(css,class_,sub_class,pseudo_class):
         if sub_class=="":
-            return CSS.css_up_class_equal(css[class_],css[class_+pseudo_class])
+            return CSS.css_up_class_equal(css[class_],css[class_+pseudo_class]) ,class_+pseudo_class
         else:
-            return CSS.css_up_class_equal(CSS.css_up_class_equal(css[class_],css[class_+" "+sub_class]),css[class_+" "+sub_class+pseudo_class])
+            return CSS.css_up_class_equal(CSS.css_up_class_equal(css[class_],css[class_+" "+sub_class]),css[class_+" "+sub_class+pseudo_class]),class_+" "+sub_class+pseudo_class
     @staticmethod
     def group_by_first_word(items):
         # Dictionary to hold groups
@@ -425,7 +435,7 @@ if __name__ == "__main__":
 
     # CSS'i JSON formatına dönüştür
     json_output = CSS.css_to_json("styles.css")
-
+    print(CSS.json_to_css(json_output))
     # JSON çıktısını yazdır
     import json
     print(json.dumps(json_output, indent=2))
