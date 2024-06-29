@@ -9,6 +9,7 @@ from SpecialWidgets import AdjustableEntry as AE
 from SpecialWidgets import AdjustableComboBox as AC
 from SpecialWidgets import YesNoDiolog as YND
 from SpecialWidgets import InputDiolog
+from SpecialWidgets import OptionmenuDiolog
 from Property import CssPropertyManager as cssPM
 from WebCodeCreater import CSS
 import ctypes
@@ -190,7 +191,7 @@ class ProjectApplication:
 
             except:
                 pass 
-            self.table_for_class=DT(self.Class_shower,dict_)
+            self.table_for_class=DT(self.Class_shower,dict_,height=400)
             cssPM.add_css_property(self.table_for_class)
             self.table_for_class.mainFrame.grid(row=3,column=0,columnspan=2,sticky="nsew")
     def destroy_class_frame(self,useless=None):
@@ -199,21 +200,40 @@ class ProjectApplication:
             self.table_for_class.mainFrame.grid_forget()
         except:
             pass    
-    def delete_class(self):
-        print(self.css_code)
-        del self.css_code[".special-class"]
-        self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
-        self.class_chooser.configure(values=CSS.no_pseudo_class(self.class_values))
-        self.class_chooser.set(CSS.no_pseudo_class(self.class_values)[0])
-        self.class_chooser.update()
-        print(self.css_code)
+    def delete_class(self,class_=None):
+        """print(self.css_code)"""
+        if class_==None:
+            OptionmenuDiolog(title="Delete class",label="Select the class to delete",list_=self.class_values,ok_button_text="Delete",ok_button_func=lambda x:self.delete_class(x),)
+        elif class_!=0:
+            print(dumps(self.css_code,indent=2))
+            print(CSS.group_by_first_word(CSS.list_css_classes("classStyles.css"))[class_])
+            for sub_class in CSS.group_by_first_word(CSS.list_css_classes("classStyles.css"))[class_]:
+                print(class_+sub_class)
+                if sub_class!="":
+                    del self.css_code[class_+" "+sub_class]
+                else:
+                    del self.css_code[class_]
+            if self.css_code.get(class_+":hover"):
+                
+                del self.css_code[class_+":hover"]
+            CSS.save_to_file("classStyles.css",CSS.json_to_css(self.css_code))
+            self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
+            self.class_chooser.configure(values=CSS.no_pseudo_class(self.class_values))
+            self.class_chooser.set(CSS.no_pseudo_class(self.class_values)[0])
+            self.class_chooser.update()
+            print(self.css_code)
     def create_class(self):
         new_class_name_diolog=InputDiolog("Create Class","What is your new class name:")
         new_class_name="."+new_class_name_diolog.DataReturn()
         if new_class_name in self.class_values:
             messagebox.showerror(title="Invalid name",message="This class name already exists")
         else:
-            messagebox.showerror(title="hello",message="iiii")
+            CSS.append_to_file("classStyles.css",new_class_name+" {\ncolor : black;\n}")
+            self.class_values =CSS.filter_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
+            self.class_chooser.configure(values=CSS.no_pseudo_class(self.class_values))
+            self.class_chooser.set(CSS.no_pseudo_class(self.class_values)[0])
+            self.class_chooser.update()
+            self.css_code=CSS.css_to_json("classStyles.css")
     def class_system(self,useless=None):
         class_=self.class_chooser.get()
         sub_class=self.sub_class_chooser.get()
@@ -228,7 +248,7 @@ class ProjectApplication:
         print(dumps(css_code_class,indent=2))
         print(type(css_code_class))
         self.update_class_tab(dict_=css_code_class)
-    def open_new_window(self, project_directory=None,type="ClassShower"):
+    def open_new_window(self, project_directory=None,type="ProjectWindow"):
         if type=="ClassShower":
             self.Class_shower =tk.CTkToplevel()
             self.root = root
@@ -253,12 +273,12 @@ class ProjectApplication:
             self.update_sub_class_chooser(self.class_chooser.get())
             self.save_table_button=tk.CTkButton(self.Class_shower,text="Save Class",command=self.save_class_button)
             self.save_table_button.grid(row=4,column=1,pady=5,padx=5,sticky="nsew")
-            self.new_class_button=tk.CTkButton(self.Class_shower,text="Create new class",width=340,command=self.create_class)
-            self.new_class_button.grid(row=5,column=0,pady=5,padx=5,sticky="nsew",columnspan=2)
+            self.new_class_button=tk.CTkButton(self.Class_shower,text="Create new class",command=self.create_class)
+            self.new_class_button.grid(row=5,column=0,pady=5,padx=5,sticky="nsew")
             self.delete_class_button=tk.CTkButton(self.Class_shower,text="Delete class",command=self.delete_class)
-            self.delete_class_button.grid(row=6,column=0,pady=5,padx=5,sticky="nsew")
+            self.delete_class_button.grid(row=5,column=1,pady=5,padx=5,sticky="nsew")
             self.css_code=CSS.css_to_json("classStyles.css")
-        if self.check_project_content(project_directory) and type=="NewProjectWindow":  
+        if self.check_project_content(project_directory) and type=="ProjectWindow":  
             self.root = root
 
             self.root.withdraw()  # Hide the main window
@@ -293,7 +313,7 @@ class ProjectApplication:
             # Define values for option menus
             self.html_elements = ["Button", "Input", "Label"]
             self.position_values = ["absolute", "fixed", "static", "relative"]
-            self.class_values = CSS.list_css_classes("style.css")
+            self.class_values = CSS.no_pseudo_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
             self.db_manager = DM('example_database.db')
             self.db_manager.create_table()
             # HTML Element Option Menu
@@ -361,6 +381,8 @@ class ProjectApplication:
             self.combobox_html_element = AC(self.new_root,"Type",values=self.html_elements,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),type=self.combobox_html_element.getData()))
             self.combobox_html_element.SpecialComboBoxFrame.place(rely=0.555, relx=0.05, relheight=0.03, relwidth=0.440)
 
+            self.class_options_menu_shower_button = tk.CTkButton(self.new_root,text="Edit class",command=lambda:self.open_new_window(project_directory=project_directory,type="ClassShower"))
+            self.class_options_menu_shower_button.place(rely=0.555, relx=0.51, relheight=0.03, relwidth=0.440)
             #########################################
             self.frame1.grid_columnconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(1, weight=1)

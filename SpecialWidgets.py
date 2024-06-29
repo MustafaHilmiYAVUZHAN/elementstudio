@@ -3,21 +3,22 @@ import customtkinter
 import pywinstyles
 from DatabaseManager import ValueParser as VP
 class OptionmenuDiolog:
-    def __init__(self,title,label,list_,ok_button_text="Ok",cancel_button_text="Cancel"):
+    def __init__(self,title,label,list_,ok_button_text="Ok",cancel_button_text="Cancel",ok_button_func=lambda x:print("ok :"+x),cancel_button_func=lambda x:print("cancel :"+x)):
         "yvzhn"
         self.root = tk.CTkToplevel()
         self.root.title(title)
         tk.set_appearance_mode("System")
-        
+        self.ok_button_func=ok_button_func
+        self.cancel_button_func=cancel_button_func
         self.label = tk.CTkLabel(self.root, text=label)
-        self.label.pack(pady=10)
+        self.label.pack(pady=5)
         self.root.wm_attributes("-topmost", True)
         tk.set_default_color_theme("extreme.json")
         pywinstyles.apply_style(self.root,"acrylic")
         self.optionmenu_list=tk.CTkOptionMenu(self.root,values=list_)
-        self.optionmenu_list.pack()
+        self.optionmenu_list.pack(pady=5)
         self.ok_button = tk.CTkButton(self.root, text=ok_button_text, command=self.on_ok_click)
-        self.ok_button.pack(side=tk.LEFT, padx=10)
+        self.ok_button.pack(side=tk.LEFT, padx=10,pady=10)
 
         self.cancel_button = tk.CTkButton(self.root, text=cancel_button_text, command=self.on_cancel_click)
         self.cancel_button.pack(side=tk.RIGHT, padx=10)
@@ -26,10 +27,15 @@ class OptionmenuDiolog:
     def on_ok_click(self):
         self.result = self.optionmenu_list.get()
         self.root.destroy()
+        self.ok_button_func(self.result)
     def on_cancel_click(self):
         self.result = 0
         self.root.destroy()
+        self.cancel_button_func(self.result)
     def GetResult(self):
+        return self.result
+    def show(self):
+        self.root.mainloop()
         return self.result
 class InputDiolog:
     def __init__(self,title,text):
@@ -172,11 +178,11 @@ class AdjustableEntry:
         if self.buttons_func:
             self.buttons_func()
 class DynamicTable:
-    def __init__(self, root,class_dict=None):
+    def __init__(self, root,class_dict=None,**kwargs):
         self.root = root
         customtkinter.set_appearance_mode("System")
         tk.set_default_color_theme("extreme.json")
-        self.mainFrame = customtkinter.CTkScrollableFrame(root)
+        self.mainFrame = customtkinter.CTkScrollableFrame(root,**kwargs)
         self.widgets = {}
         self.class_dict=class_dict
         self.mainFrame.columnconfigure(2, minsize=10)

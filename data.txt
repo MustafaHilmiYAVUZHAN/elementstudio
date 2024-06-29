@@ -1,6 +1,6 @@
-electronstudio - C:/Users/Musta/OneDrive/Masaüstü/electronstudio
-src - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sd/src
 zcxz - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/zcxz
+src - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sd/src
+electronstudio - C:/Users/Musta/OneDrive/Masaüstü/electronstudio
 dededdd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/dededdd
 sasd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/sasd
 asddddddddddddddd - C:/Users/Musta/OneDrive/Masaüstü/electronstudio/asddddddddddddddd

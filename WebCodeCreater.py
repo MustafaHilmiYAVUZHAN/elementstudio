@@ -26,14 +26,14 @@ class CSS:
             file.write('\n'+text + '\n')
     @staticmethod
     def select_sub_class(css,start_selector,readinfile=True):
-        soup = BeautifulSoup(css_code, 'html.parser')
+        soup = BeautifulSoup(css, 'html.parser')
 
         # Extract the desired CSS rules
-        start_selector = ".standart-class .button:hover"
+        #start_selector = ".standart-class .button:hover"
         in_block = False
         result = ""
 
-        for line in css_code.split("\n"):
+        for line in css.split("\n"):
             if line.strip().startswith(start_selector):
                 in_block = True
             if in_block:
