@@ -126,16 +126,59 @@ class CSS:
         return list(set([item.split()[0] for item in item]))
     @staticmethod
     def json_to_css(json):
-        css=""
-        for key in list(json.keys()):
-            css+=key+" {\n"+CSS.dict_to_css(json[key])+"\n}\n"
-        return css 
+        try:
+            css=""
+            for key in list(json.keys()):
+                css+=key+" {\n"+CSS.dict_to_css(json[key])+"\n}\n"
+            return css 
+        except AttributeError:
+            return CSS.json_to_css({".class":json})[9:-2].replace("\n","\n        ")
+
     @staticmethod
-    def return_css(css,class_,sub_class,pseudo_class):
-        if sub_class=="":
-            return CSS.css_up_class_equal(css[class_],css[class_+pseudo_class]) ,class_+pseudo_class
+    def return_css(css, class_, sub_class, pseudo_class, id_css=None, id_=None):
+        
+        print("data:"+str(json.dumps([ class_, sub_class, pseudo_class, id_css, id_ ],indent=2)))
+        print("id_css is not None")
+        print(id_css is not None)
+        if id_css is not None:
+            id_="#"+id_
+            print("id_ in list(id_css.keys())")
+            print(id_ in list(id_css.keys()))
+        if id_css is not None and id_ in list(id_css.keys()):
+            print("id_css is not None and id_ in id_css: true")
+            base_css, base_class = CSS.return_css(css, class_, sub_class, pseudo_class)
+            if id_css is not None and id_ in list(id_css.keys()):
+                print("id_css is not None and id_ in id_css:true")
+                print(CSS.css_up_class_equal(base_css, id_css[id_]), base_class)
+                return CSS.css_up_class_equal(base_css, id_css[id_]), base_class
+            else:
+                print("id_css is not None and id_ in id_css:false")
+                print(base_css, base_class)
+                return base_css, base_class
         else:
-            return CSS.css_up_class_equal(CSS.css_up_class_equal(css[class_],css[class_+" "+sub_class]),css[class_+" "+sub_class+pseudo_class]),class_+" "+sub_class+pseudo_class
+            print("id_css is not None and id_ in id_css: false")
+            if not sub_class:
+                print("not sub_class:true")
+                if class_ + pseudo_class in css:
+                    print(CSS.css_up_class_equal(css[class_], css[class_ + pseudo_class]), class_ + pseudo_class)
+                    return CSS.css_up_class_equal(css[class_], css[class_ + pseudo_class]), class_ + pseudo_class
+                else:
+                    print(CSS.css_up_class_equal(css[class_], css[class_]), class_)
+                    return CSS.css_up_class_equal(css[class_], css[class_]), class_
+            else:
+                print("not sub_class:false")
+                full_class = f"{class_} {sub_class}{pseudo_class}"
+                if full_class in css:
+                    print(CSS.css_up_class_equal(CSS.css_up_class_equal(css[class_], css[f"{class_} {sub_class}"]), css[full_class]), full_class)
+                    return CSS.css_up_class_equal(CSS.css_up_class_equal(css[class_], css[f"{class_} {sub_class}"]), css[full_class]), full_class
+                elif f"{class_} {sub_class}" in css:
+                    print(CSS.css_up_class_equal(css[class_], css[f"{class_} {sub_class}"]), f"{class_} {sub_class}")
+                    return CSS.css_up_class_equal(css[class_], css[f"{class_} {sub_class}"]), f"{class_} {sub_class}"
+                else:
+                    print(CSS.css_up_class_equal(css[class_], css[class_]), class_)
+                    return CSS.css_up_class_equal(css[class_], css[class_]), class_
+
+
     @staticmethod
     def group_by_first_word(items):
         # Dictionary to hold groups
@@ -175,16 +218,16 @@ class CSS:
     def find_pseude_class(liste,key):
         return [item.split(key)[1] for item in liste if item.startswith(key)]
     @staticmethod
-    def convert_to_id_css(element_type, element_id, avfp, x, y, witableh, height, element_class,extra_css):
+    def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
         avfp = str(avfp)
         position=avfp
         css_template = f"""#{element_id} {{
         position: {'absolute' if position == '0' else 'fixed' if position == '1' else 'static' if position == '2' else 'relative'};
-        left: {x}px;
-        top: {y}px;
-        width: {width}px;
-        height: {height}px;
-        {extra_css}
+        left: {x};
+        top: {y};
+        width: {width};
+        height: {height};
+        {CSS.json_to_css(extra_css)}
         }}
         """
 
@@ -224,6 +267,13 @@ class CSS:
     @staticmethod
     def filter_class(liste):
         return [item for item in liste if item.startswith(".") ]
+    @staticmethod
+    def find_different_pairs(dictbase, dictspecial):
+        result = {}
+        for key in list(dictbase.keys()):
+            if key in dictspecial and dictbase[key] != dictspecial[key]:
+                result[key] = dictspecial[key]
+        return result
 class HTML: 
 
     @staticmethod
@@ -280,7 +330,22 @@ class HTML:
         else:
             return f"<{tag_name}>{text}"
     
-
+    @staticmethod
+    def list_to_html(elements,title="ElementStudio"):
+        result = """<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <link rel="stylesheet" href="classStyles.css">
+    <link rel="stylesheet" href="identifyStyles.css">
+</head>
+<body>\n"""
+        for element in elements:
+            result += f'    <{element[1]} id="{element[0]}" class="{element[2]}">{element[3]}</{element[1]}>\n'
+        result += "</body>"
+        return result
     @staticmethod
     def convert_to_html(json_data):
         html = ""

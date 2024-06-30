@@ -12,6 +12,7 @@ from SpecialWidgets import InputDiolog
 from SpecialWidgets import OptionmenuDiolog
 from Property import CssPropertyManager as cssPM
 from WebCodeCreater import CSS
+from WebCodeCreater import HTML
 import ctypes
 import pywinstyles
 from json import dumps
@@ -104,7 +105,11 @@ class ProjectApplication:
         self.id_optionmenu.configure(values=self.db_manager.get_all_ids())
         
         self.id_optionmenu.update()
-    
+        html_list=[]
+        for id_ in self.db_manager.get_all_ids():
+            html_list.append([id_,self.db_manager.find_one_data(id_,"type"),self.db_manager.find_one_data(id_,"class"),self.db_manager.find_one_data(id_,"text")])
+        print(HTML.list_to_html(html_list))
+        CSS.save_to_file("index.html",HTML.list_to_html(html_list))
         # Print the current selections list (for debugging)
 
     def delete_id(self):
@@ -248,13 +253,29 @@ class ProjectApplication:
         print(dumps(css_code_class,indent=2))
         print(type(css_code_class))
         self.update_class_tab(dict_=css_code_class)
+    def UpdateDynamicTable(self):
+        self.class_values = CSS.no_pseudo_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
+        if self.optionmenu_for_class:
+            self.optionmenu_for_class.configure(values=self.class_values)
+        
+        self.css_code=CSS.css_to_json("classStyles.css")
+        self.css_code_for_id=CSS.css_to_json("identifyStyles.css")  
+        self.table.mainFrame.pack_forget()
+        self.table.mainFrame.destroy()
+        self.table = DT(self.element_property.tab("css"),class_dict=CSS.return_css(self.css_code,self.combobox_Class.getData(),"."+self.combobox_html_element.getData(),"")[0])  
+        cssPM.add_css_property(self.table)      
+        self.defualt_css=CSS.css_to_json(".class {\n"+CSS.dict_to_css(self.table.all_data_in_wigdet())+"\n}",readinfile=0)[".class"]
+        self.table = DT(self.element_property.tab("css"),class_dict=CSS.return_css(self.css_code,self.combobox_Class.getData(),"."+self.combobox_html_element.getData(),"",id_css=self.css_code_for_id,id_=self.id_optionmenu.get())[0])
+        cssPM.add_css_property(self.table)
+        self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
+        
     def open_new_window(self, project_directory=None,type="ProjectWindow"):
         if type=="ClassShower":
             self.Class_shower =tk.CTkToplevel()
             self.root = root
 
             self.root.withdraw()
-            self.Class_shower.protocol("WM_DELETE_WINDOW", self.Class_shower.destroy)
+            self.Class_shower.protocol("WM_DELETE_WINDOW", lambda:(self.UpdateDynamicTable,self.Class_shower.destroy()))
             self.Class_shower.title("Classes")
             self.Class_shower.geometry("350x600")
             self.Class_shower.resizable(1, 1)
@@ -278,6 +299,8 @@ class ProjectApplication:
             self.delete_class_button=tk.CTkButton(self.Class_shower,text="Delete class",command=self.delete_class)
             self.delete_class_button.grid(row=5,column=1,pady=5,padx=5,sticky="nsew")
             self.css_code=CSS.css_to_json("classStyles.css")
+            self.Class_shower.mainloop()
+
         if self.check_project_content(project_directory) and type=="ProjectWindow":  
             self.root = root
 
@@ -311,7 +334,7 @@ class ProjectApplication:
             # Initialize list to store selections
             self.selections = []
             # Define values for option menus
-            self.html_elements = ["Button", "Input", "Label"]
+            self.html_elements = ["button", "Input", "Label"]
             self.position_values = ["absolute", "fixed", "static", "relative"]
             self.class_values = CSS.no_pseudo_class(CSS.list_main(CSS.list_css_classes("classStyles.css")))
             self.db_manager = DM('example_database.db')
@@ -376,9 +399,9 @@ class ProjectApplication:
 
             self.combobox_position = AC(self.new_root,"Position",values=self.position_values,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),padding=int(self.position_values.index(self.combobox_position.getData()))+1))
             self.combobox_position.SpecialComboBoxFrame.place(rely=0.520, relx=0.05, relheight=0.03, relwidth=0.440)
-            self.combobox_Class = AC(self.new_root,"Class",values=self.class_values,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),class_=self.combobox_Class.getData()))
+            self.combobox_Class = AC(self.new_root,"Class",values=self.class_values,buttons_func=lambda:(self.db_manager.update_data(self.id_optionmenu.get(),class_=self.combobox_Class.getData()),self.UpdateDynamicTable()))
             self.combobox_Class.SpecialComboBoxFrame.place(rely=0.520, relx=0.51, relheight=0.03, relwidth=0.440)
-            self.combobox_html_element = AC(self.new_root,"Type",values=self.html_elements,buttons_func=lambda:self.db_manager.update_data(self.id_optionmenu.get(),type=self.combobox_html_element.getData()))
+            self.combobox_html_element = AC(self.new_root,"Type",values=self.html_elements,buttons_func=lambda:(self.db_manager.update_data(self.id_optionmenu.get(),type=self.combobox_html_element.getData()),self.UpdateDynamicTable()))
             self.combobox_html_element.SpecialComboBoxFrame.place(rely=0.555, relx=0.05, relheight=0.03, relwidth=0.440)
 
             self.class_options_menu_shower_button = tk.CTkButton(self.new_root,text="Edit class",command=lambda:self.open_new_window(project_directory=project_directory,type="ClassShower"))
@@ -388,25 +411,27 @@ class ProjectApplication:
             self.frame1.grid_columnconfigure(1, weight=1)
             self.element_property = tk.CTkTabview(self.new_root)
             self.element_property.place(rely=0.63,relx=0.0125,relheight=0.28,relwidth=0.975)
+            self.css_code=CSS.css_to_json("classStyles.css")
+            self.css_code_for_id=CSS.css_to_json("identifyStyles.css")
             self.element_property.add("css")           
-            self.table = DT(self.element_property.tab("css"),class_dict=CSS.stringtodict("""display: inline-block;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;"""))
+            self.table = DT(self.element_property.tab("css"),class_dict=CSS.return_css(self.css_code,self.combobox_Class.getData(),"."+self.combobox_html_element.getData(),"")[0])
             cssPM.add_css_property(self.table)
-
+            self.defualt_css=CSS.css_to_json(".class {\n"+CSS.dict_to_css(self.table.all_data_in_wigdet())+"\n}",readinfile=0)[".class"]
+            self.table = DT(self.element_property.tab("css"),class_dict=CSS.return_css(self.css_code,self.combobox_Class.getData(),"."+self.combobox_html_element.getData(),"",id_css=self.css_code_for_id,id_=self.id_optionmenu.get())[0])
+            cssPM.add_css_property(self.table)
+            self.update_for_new_id(self.id_optionmenu.get())
 
             self.table.mainFrame.pack(side="bottom", fill="both", expand=True, pady=0, padx=0)
-            self.update_btn = tk.CTkButton(self.new_root,text="update",command=lambda:self.toplevel_update(project_directory))
-            self.update_btn.place(rely=0.92,relx=0.575,relwidth=0.4)
+            self.save_btn = tk.CTkButton(self.new_root,text="update",command=lambda:self.save_id_css())
+            self.save_btn.place(rely=0.92,relx=0.575,relwidth=0.4)
             print(self.table.all_data_in_wigdet())
             # Add a button to return to the main window
             back_button = tk.CTkButton(self.new_root, text="Back to Main Menu", command=self.back_to_main_menu,hover_color="black")
             back_button.place(rely=0.92,relx=0.025,relwidth=0.4)
             back_button = tk.CTkButton(self.new_root, text="Exit", command=lambda:exit(),hover_color="red")
             back_button.place(rely=0.92,relx=0.45,relwidth=0.1)
-            print(CSS.dict_to_css(self.table.all_data_in_wigdet()))
+            
+            print()
             """ # Listbox to show project content
             self.file_listbox = Listbox(self.new_root)
             self.file_listbox.pack(fill="both", expand=True)
@@ -414,6 +439,7 @@ class ProjectApplication:
             if not self.show_project_content(project_directory):
                 self.back_to_main_menu()"""
     def update_for_new_id(self,id):
+        
         self.entry_x.setValue(VP.get_number(self.db_manager.find_one_data(id,"x")))
         self.entry_x.setUnit(VP.get_unit(self.db_manager.find_one_data(id,"x")))
         self.entry_y.setValue(VP.get_number(self.db_manager.find_one_data(id,"y")))
@@ -425,12 +451,22 @@ class ProjectApplication:
         self.combobox_Class.setValue(self.db_manager.find_one_data(id,"class"))
         self.combobox_position.setValue(self.position_values[self.db_manager.find_one_data(id,"padding")-1])
         self.combobox_html_element.setValue(self.db_manager.find_one_data(id,"type"))
-
+        self.UpdateDynamicTable()
+    def save_id_css(self):
+        id= self.id_optionmenu.get()
+        css_json=CSS.css_to_json(".class {\n"+CSS.dict_to_css(self.table.all_data_in_wigdet())+"\n}",readinfile=0)[".class"]
+        id_css=CSS.convert_to_id_css("",id,self.db_manager.find_one_data(id,"padding"),self.db_manager.find_one_data(id,"x"),self.db_manager.find_one_data(id,"y"),self.db_manager.find_one_data(id,"width"),self.db_manager.find_one_data(id,"height"),self.db_manager.find_one_data(id,"class"),CSS.find_different_pairs(self.defualt_css,css_json))
+        id_css_json=CSS.css_to_json(id_css,readinfile=0)
+        print(dumps(id_css_json,indent=2))
+        self.css_code_for_id[list(id_css_json.keys())[0]]=id_css_json[list(id_css_json.keys())[0]]
+        CSS.save_to_file("identifyStyles.css",CSS.json_to_css(self.css_code_for_id))
     def toplevel_update(self,project_directory):
         from SpecialWidgets import DynamicTable as DT
-        # def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,extra_css):
+        # def convert_to_id_css(element_type, element_id, avfp, x, y, width, height, element_class,text):
         id= self.id_optionmenu.get()
-        print(CSS.convert_to_id_css("",id,self.db_manager.find_one_data(id,"padding"),self.db_manager.find_one_data(id,"x"),self.db_manager.find_one_data(id,"y"),self.db_manager.find_one_data(id,"width"),self.db_manager.find_one_data(id,"height"),self.db_manager.find_one_data(id,"class"),"" ))
+        CSS.convert_to_id_css("",id,self.db_manager.find_one_data(id,"padding"),self.db_manager.find_one_data(id,"x"),self.db_manager.find_one_data(id,"y"),self.db_manager.find_one_data(id,"width"),self.db_manager.find_one_data(id,"height"),self.db_manager.find_one_data(id,"class"),CSS.find_different_pairs(self.defualt_css,CSS.css_to_json(".class {\n"+CSS.dict_to_css(self.table.all_data_in_wigdet())+"\n}",readinfile=0)[".class"]))
+        print(CSS.css_to_json(".class {\n"+CSS.dict_to_css(self.table.all_data_in_wigdet())+"\n}",readinfile=0))
+        print(CSS.convert_to_id_css("",id,self.db_manager.find_one_data(id,"padding"),self.db_manager.find_one_data(id,"x"),self.db_manager.find_one_data(id,"y"),self.db_manager.find_one_data(id,"width"),self.db_manager.find_one_data(id,"height"),self.db_manager.find_one_data(id,"class"),CSS.find_different_pairs(self.defualt_css,CSS.css_to_json(".class {\n"+CSS.dict_to_css(self.table.all_data_in_wigdet())+"\n}",readinfile=0)[".class"])))
 
         self.back_to_main_menu()
         self.open_new_window(project_directory=project_directory)

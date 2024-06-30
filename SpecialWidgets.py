@@ -125,7 +125,9 @@ class AdjustableEntry:
 
         self.entry = tk.CTkEntry(self.SpecialEntryFrame, width=30)
         self.entry.place(rely=0.05,relx=0.45,relheight=0.9,relwidth=0.15)
-
+        self.entry.bind("<FocusOut>",self.do_btn_func)
+        self.entry.bind("<Button-1>",self.do_btn_func)
+        self.entry.bind("<Return>",self.do_btn_func)
         self.btn_decrease = tk.CTkButton(self.SpecialEntryFrame, text="-", width=10, height=10, command=self.decrease)
         self.btn_decrease.place(rely=0.2,relx=0.63,relheight=0.6,relwidth=0.07)
 

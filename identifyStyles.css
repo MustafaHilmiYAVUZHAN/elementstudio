@@ -1,7 +1,41 @@
-#special-element {
-    background-color: yellow;
-    color: red;
-    font-size: 20px;
-    padding: 10px;
-    border: 2px solid black;
-  }
+#id {
+position: static;
+left: 10cm;
+top: 10mm;
+width: 31.0%;
+height: 14.0mm;
+color: #000;
+background-color: black;
+font-size: 16px;
+font-weight: 800;
+margin: 0.5% 0.5em 0.5rem 0.5em;
+padding: 0.5 0.5 0.5 0.5;
+border: none;
+min-width: 200.0px;
+max-width: 300.0px;
+cursor: help;
+z-index: 30;
+}
+#id002 {
+position: fixed;
+left: 85px;
+top: 69.0mm;
+width: 69.0px;
+height: 6.0mm;
+background-color: #FFFFFF;
+}
+#id001 {
+position: fixed;
+left: 20%;
+top: 47mm;
+width: 20mm;
+height: 10mm;
+}
+#id003 {
+position: fixed;
+left: 10mm;
+top: 11mm;
+width: 21.0mm;
+height: 11.0mm;
+background-color: green;
+}

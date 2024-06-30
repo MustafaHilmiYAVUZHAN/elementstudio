@@ -152,13 +152,7 @@ class CssPropertyManager:
             "hidden"
         ] )
         
-        table.add_row("position", [
-            "static",
-            "relative",
-            "absolute",
-            "fixed",
-            "sticky"
-        ] )
+
         
         table.add_row("float", [
             "none",

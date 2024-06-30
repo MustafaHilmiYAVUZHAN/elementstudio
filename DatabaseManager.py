@@ -43,7 +43,7 @@ class DM:
                 width TEXT,
                 height TEXT,
                 class TEXT,
-                extra_css TEXT
+                text TEXT
             )
         ''')
         self.connection.commit()
@@ -61,12 +61,12 @@ class DM:
             count += 1
         return id_name
 
-    def insert_data(self, id_name="id", type="label", padding="1111", x="10mm", y="10mm", width="20mm", height="10mm", class_="styleClass", extra_css=''):
+    def insert_data(self, id_name="id", type="label", padding="1111", x="10mm", y="10mm", width="20mm", height="10mm", class_="styleClass", text=''):
         id_name = self.generate_unique_id_name(id_name)
         self.cursor.execute('''
-            INSERT INTO Data (id_name, type, padding, x, y, width, height, class, extra_css)
+            INSERT INTO Data (id_name, type, padding, x, y, width, height, class, text)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (id_name, type, padding, x, y, width, height, class_, extra_css))
+        ''', (id_name, type, padding, x, y, width, height, class_, text))
         self.connection.commit()
         print(f"Inserted data with id_name: {id_name}")
         return id_name
@@ -88,7 +88,7 @@ class DM:
         return [row[0] for row in self.cursor.fetchall()]
     def close_connection(self):
         self.connection.close()
-    def update_data(self, id_name, type=None, padding=None, x=None, y=None, width=None, height=None, class_=None, extra_css=None):
+    def update_data(self, id_name, type=None, padding=None, x=None, y=None, width=None, height=None, class_=None, text=None):
         update_query = 'UPDATE Data SET'
         update_values = []
 
@@ -113,9 +113,9 @@ class DM:
         if class_ is not None:
             update_query += ' class=?,'
             update_values.append(class_)
-        if extra_css is not None:
-            update_query += ' extra_css=?,'
-            update_values.append(extra_css)
+        if text is not None:
+            update_query += ' text=?,'
+            update_values.append(text)
 
         # Remove the last comma and add the WHERE clause
         update_query = update_query.rstrip(',') + ' WHERE id_name=?'
@@ -142,10 +142,8 @@ if __name__ == "__main__":
     db_manager.create_table()
 
     # Attempt to insert data
-    db_manager.insert_data('button', 'BTN', 3120, '20', '30', '120', '220', 'example_class_3', 'text-align: center;')
-    db_manager.insert_data('button', 'BTN', 3120, '20', '30', '120', '220', 'example_class_3', 'text-align: center;')
     # Find data
-    data = db_manager.find_data('button')
+    print(db_manager.find_data('id'))
     # Delete data
     db_manager.delete_data('button')
 
