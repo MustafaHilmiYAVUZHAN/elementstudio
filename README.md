@@ -1,5 +1,5 @@
+<span style="color:red;">Since this project did not meet the required goals and objectives, it was decided to redevelop it from scratch.</span>
 # elementstudio
-
 This project is in its early stages, currently considered version negative 1.0. The aim of the project is to create websites without requiring CSS and HTML coding.
 
 
